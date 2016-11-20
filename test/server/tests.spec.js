@@ -7,7 +7,6 @@ const app = require('./../../server'),
   supertest = require('supertest'),
   expect = require('chai').expect,
   config = require('./../../app/config/config'),
-  dotenv = require('dotenv').config(),
   requestHandler = supertest(app);
 let test_user = {
     firstname: 'Alice',
