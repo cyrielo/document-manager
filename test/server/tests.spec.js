@@ -7,7 +7,6 @@ const app = require('./../../server'),
   supertest = require('supertest'),
   expect = require('chai').expect,
   config = require('./../../app/config/config'),
-  dotenv = require('dotenv').config(),
   requestHandler = supertest(app);
 let test_user = {
     firstname: 'Alice',
@@ -424,7 +423,6 @@ describe('Document', ()=>{
       .set('authorization', admin_token)
       .expect(200)
       .end((err, res)=>{
-        console.log(res.body);
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Documents listed');
         done();

@@ -23,7 +23,17 @@
   },
 
   "homepage": "https://github.com/cyrielo/document-manager#readme",
-  
+
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.1.9",
+    "morgan": "^1.7.0",
+    "pg": "^6.1.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.24.8"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",

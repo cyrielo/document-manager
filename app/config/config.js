@@ -16,7 +16,7 @@ const config = {
     "host": process.env.DB_TEST_HOST,
     "secrete": process.env.AUTH_SECRETE,
     "dialect": "postgres",
-    "logging": false
+  
   },
   "production": {
     "username": process.env.DB_USER,
