@@ -35,7 +35,6 @@ describe('User', ()=>{
       .send(test_user)
       .expect(201)
       .end((err, res)=>{
-        console.log('TAG: create user', res.body);
         expect(res.body.status).to.equal('success');
         expect(res.body.data.user.email).to.equal(test_user.email);
         token = res.body.data.token;
@@ -262,7 +261,6 @@ describe('Role', ()=>{
       .send(newRole)
       .expect(201)
       .end((err, res)=>{
-        console.log('TAG: create role', res.body);
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Role created');
         requestHandler.post('/api/roles')
@@ -376,7 +374,6 @@ describe('Document', ()=>{
       })
       .expect(201)
       .end((err, res)=>{
-        console.log('TAG: create document', res.body);
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Document created successfully');
         document_created = res.body.data;
@@ -426,7 +423,6 @@ describe('Document', ()=>{
       .set('authorization', admin_token)
       .expect(200)
       .end((err, res)=>{
-        console.log(res.body);
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Documents listed');
         done();
