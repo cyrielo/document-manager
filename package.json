@@ -1,0 +1,32 @@
+{
+  "name": "document-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "istanbul": "istanbul cover node_modules/.bin/_mocha --reporter lcovonly -- -- test/*",
+    "test": "npm run istanbul",
+    "coverage": "rm -rf coverage/",
+    "coveralls": "cat coverage/lcov.info | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyrielo/document-manager.git"
+  },
+  "author": "Ologho Cyril Paul",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyrielo/document-manager/issues"
+  },
+
+  "homepage": "https://github.com/cyrielo/document-manager#readme",
+  
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.15",
+    "dotenv": "^2.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2",
+    "supertest": "^2.0.1"
+  }
+}
