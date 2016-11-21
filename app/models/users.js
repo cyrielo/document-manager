@@ -271,6 +271,33 @@ module.exports = function(sequelize, DataTypes) {
         });
 
 
+      },
+
+      getUserDocs: function(uid, token) {
+
+        const jwt = require('jsonwebtoken');
+        const config = require('./../config/config');
+        const decoded = jwt.verify(token, config.secrete);
+
+        return new Promise((fulfill, fail)=>{
+          if(uid === decoded.id.toString()){
+            sequelize.models.documents.find({
+              where: {
+                ownerId: uid
+              }
+            }).then((doc)=>{
+              if(doc){
+                fulfill(doc.dataValues);
+              }else{
+                fail({statusCode: 404, message: 'Document does not exists!'});
+              }
+            }).catch((error)=>{
+              fail({statusCode: 500, message: error});
+            })
+          }else{
+            fail({statusCode: 401, message:"You don't have permissions to view this document"});
+          }
+        });
       }
     }
   });
