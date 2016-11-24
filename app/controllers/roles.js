@@ -1,91 +1,95 @@
-class Roles{
-  constructor(){
+class Roles {
+  constructor() {
     this.models = require('../models/index');
   }
 
-  createRole(req, res){
-    const role_title = req.body.title;
-    this.models.roles.createRole(role_title)
-      .then((role)=>{
+  createRole(req, res) {
+    const roleTitle = req.body.title;
+    this.models.roles.createRole(roleTitle)
+      .then((role) => {
         res.status(201).json({
           status: 'success',
           message: 'Role created',
-          data: role
+          data: role,
         });
-    }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message
+      })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
-  all(req, res){
+  all(req, res) {
     this.models.roles.all()
-      .then((roles)=>{
+      .then((roles) => {
         res.status(201).json({
           status: 'success',
           message: 'Role listed',
-          data: roles
+          data: roles,
         });
-      }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message
+      })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
-  updateRole(req, res){
+  updateRole(req, res) {
     const id = req.params.id;
     const title = req.body.title;
     this.models.roles.updateRole(id, title)
-      .then((roles)=>{
+      .then((roles) => {
         res.status(200).json({
           status: 'success',
           message: 'Role updated',
-          data: roles
+          data: roles,
         });
-      }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message
+      })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
-  deleteRole(req, res){
+  deleteRole(req, res) {
     const id = req.params.id;
     this.models.roles.deleteRole(id)
-      .then((roles)=>{
+      .then((roles) => {
         res.status(200).json({
           status: 'success',
           message: 'Role deleted',
-          data: roles
+          data: roles,
         });
-      }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message
+      })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
-  getRole(req, res){
+  getRole(req, res) {
     const id = req.params.id;
     this.models.roles.getRole(id)
-      .then((roles)=>{
+      .then((roles) => {
         res.status(200).json({
           status: 'success',
           message: 'Role info loaded',
-          data: roles
+          data: roles,
         });
-      }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message
+      }).catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
 }

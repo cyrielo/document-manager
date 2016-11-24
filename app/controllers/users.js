@@ -1,189 +1,180 @@
-class Users{
+class Users {
 
-  constructor(){
+  constructor() {
     this.models = require('./../models/index');
+    const Validator = require('./../helpers/validate');
+    this.validate = new Validator();
   }
 
-  login (req, res){
-    this.models.users.login(req).then((user)=>{
+  login(req, res) {
+    this.models.users.login(req).then((user) => {
       res.status(200).json({
-        status : 'success',
+        status: 'success',
         message: 'Successful login',
-        data: user
+        data: user,
       });
-
-    }).catch((errorDetails)=>{
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message,
-
+    })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    });
   }
 
-  register(req, res){
+  register(req, res) {
     this.models.users.register(req)
-      .then((user)=>{
+      .then((user) => {
         res.status(201).json({
           status: 'success',
           message: 'User created!',
-          data: user
+          data: user,
         });
       })
-      .catch((error)=>{
+      .catch((error) => {
         res.status(422).json({
-          status: "fail",
-          message: "Unable to create user account!",
-          data: error
-        })
+          status: 'fail',
+          message: 'Unable to create user account!',
+          data: error,
+        });
       });
   }
 
-  logout(req, res){
-
+  logout(req, res) {
     res.status(200).json({
-      status : 'success',
+      status: 'success',
       message: 'You have logged out',
     });
-
   }
 
-  getUsers(req, res){
+  getUsers(req, res) {
     this.models.users.getUsers()
-      .then((users)=>{
+      .then((users) => {
         res.status(200).json({
           status: 'success',
           message: 'Users listed!',
-          data: users
+          data: users,
         });
       })
-      .catch((statusCode, error)=>{
+      .catch((statusCode, error) => {
         res.status(statusCode).json({
-          status: "fail",
-          message: "Unable to get users!",
-          data: error
-        })
+          status: 'fail',
+          message: 'Unable to get users!',
+          data: error,
+        });
       });
   }
 
-  getUser(req, res){
+  getUser(req, res) {
     this.models.users.getUser(req.params.id)
-      .then((user)=>{
+      .then((user) => {
         res.status(200).json({
-          status:'success',
+          status: 'success',
           message: 'Found user',
-          data: user
-        })
-      }).catch((error)=>{
+          data: user,
+        });
+      })
+      .catch((error) => {
         res.status(404).json({
           status: 'fail',
-          message: 'User not found!',
-          data: ''
-        })
-    })
+          message: error,
+        });
+      });
   }
 
-  getUserByEmail(req, res){
-    let email = decodeURIComponent(req.params.email);
+  getUserByEmail(req, res) {
+    const email = decodeURIComponent(req.params.email);
     this.models.users.getUserByEmail(email)
-      .then((user)=>{
+      .then((user) => {
         res.status(200).json({
-          status:'success',
+          status: 'success',
           message: 'Found user',
-          data: user
-        })
-      }).catch((error)=>{
-      res.status(404).json({
-        status: 'fail',
-        message: 'User not found!',
-        data: ''
+          data: user,
+        });
       })
-    })
+      .catch((error) => {
+        res.status(404).json({
+          status: 'fail',
+          message: error,
+        });
+      });
   }
 
-  updateUser(req, res){
-    const
-      validator = require('./../helpers/validate'),
-      validate = new validator(),
-      uid = req.params.id,
-      token = req.headers.authorization,
-      firstname = req.body.firstname,
-      lastname = req.body.lastname,
-      email = req.body.email,
-      password = req.body.password;
+  updateUser(req, res) {
+    const uid = req.params.id;
+    const token = req.headers.authorization;
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const email = req.body.email;
+    const password = req.body.password;
 
-    let update = {};
+    const update = {};
 
-    if(!validate.isEmpty(firstname)){
+    if (!this.validate.isEmpty(firstname)) {
       update.firstname = firstname;
     }
 
-    if(!validate.isEmpty(lastname)){
+    if (!this.validate.isEmpty(lastname)) {
       update.lastname = lastname;
     }
 
-    if(validate.email(email)){
+    if (this.validate.email(email)) {
       update.email = email;
     }
 
-    if(!validate.isEmpty(password)){
-      update.password = validate.hashPassword(password);
+    if (!this.validate.isEmpty(password)) {
+      update.password = this.validate.hashPassword(password);
     }
 
-    this.models.users.updateUser(uid, update, token).then((user)=>{
+    this.models.users.updateUser(uid, update, token).then((user) => {
       res.status(200).json({
         status: 'success',
         message: 'User updated',
-        data: user
+        data: user,
       });
-    }).catch((error)=>{
+    }).catch((error) => {
       res.status(401).json({
         status: 'fail',
         message: 'Update failed',
-        data: error
+        data: error,
       });
     });
-
   }
 
-  deleteUser(req, res){
-    const
-      uid = req.params.id,
-      token = req.headers.authorization;
-    this.models.users.deleteUser(uid, token).then((info)=>{
+  deleteUser(req, res) {
+    const uid = req.params.id;
+    const token = req.headers.authorization;
+    this.models.users.deleteUser(uid, token).then((info) => {
       res.status(200).json({
         status: 'success',
         message: 'Operation successful',
-        data: info
+        data: info,
       });
-    }).catch((error)=>{
+    }).catch((error) => {
       res.status(403).json({
         status: 'fail',
         message: 'Operation failed',
-        data: error
+        data: error,
       });
     });
   }
 
-  getUserDocs(req, res){
-    const
-      uid = req.params.id,
-      token = req.headers.authorization;
-    this.models.users.getUserDocs(uid, token).then((data)=>{
+  getUserDocs(req, res) {
+    const uid = req.params.id;
+    const token = req.headers.authorization;
+    this.models.users.getUserDocs(uid, token).then((data) => {
       res.status(200).json({
         status: 'success',
         message: 'Document listed',
-        data: data
+        data,
       });
-    }).catch((errorDetails)=>{
+    }).catch((errorDetails) => {
       res.status(errorDetails.statusCode).json({
         status: 'fail',
-        message: errorDetails.message
+        message: errorDetails.message,
       });
     });
-
   }
-
 }
 
 module.exports = Users;
