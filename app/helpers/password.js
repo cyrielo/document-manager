@@ -1,15 +1,15 @@
-class Password{
-  constructor(){
+class Password {
+  constructor() {
     this.bcrypt = require('bcryptjs');
   }
 
-  compare(password_str, password_hash){
-    return this.bcrypt.compareSync(password_str, password_hash);
+  compare(passwordStr, passwordHash){
+    return this.bcrypt.compareSync(passwordStr, passwordHash);
   }
 
-  generate(password_str){
-    let salt = this.bcrypt.genSaltSync(10);
-    return this.bcrypt.hashSync(password_str, salt);
+  generate(passwordStr) {
+    const salt = this.bcrypt.genSaltSync(10);
+    return this.bcrypt.hashSync(passwordStr, salt);
   }
 }
 module.exports = Password;
