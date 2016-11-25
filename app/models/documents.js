@@ -1,22 +1,20 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var documents = sequelize.define('documents', {
+module.exports = (sequelize, DataTypes) => {
+  const documents = sequelize.define('documents', {
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     access: DataTypes.STRING,
     role: DataTypes.STRING,
-    ownerId: DataTypes.INTEGER
+    ownerId: DataTypes.INTEGER,
   }, {
     classMethods: {
-      associate: function(models) {
+      associate: (models) => {
         // associations can be defined here
         // TODO fix document relationship issues
       },
 
+      createDoc: (req, ownerId, role) => {
 
-      createDoc: function(req, ownerId, role) {
-
-        return new Promise((fulfill, fail)=>{
+        return new Promise((fulfill, fail) => {
           const title = req.body.title;
           const content = req.body.content;
           let access = req.body.access;
@@ -24,206 +22,212 @@ module.exports = function(sequelize, DataTypes) {
           const Validator = require('./../helpers/validate');
           const validate = new Validator();
 
-          let errors = [];
+          const errors = [];
 
-          if(validate.isEmpty(title)){
+          if (validate.isEmpty(title)) {
             errors.push('Document title is required');
           }
 
-          if(validate.isEmpty(content)){
+          if (validate.isEmpty(content)) {
             errors.push('Document content is required');
           }
 
-          if(validate.isEmpty(access)){
+          if (validate.isEmpty(access)) {
             access = 'public';
-          }else if(access !== 'public' || access !== 'private'){
-            errors.push('Document access type is not valid')
+          } else if (access !== 'public' || access !== 'private') {
+            errors.push('Document access type is not valid');
           }
 
-          if(errors.length < 1){
-            documents.documentExists(title).then(()=>{
-              fail({statusCode: 403, message: 'Document already exists'});
-            }).catch(()=>{
-
-              documents.create({
-                title: title,
-                content: content,
-                ownerId: ownerId,
-                access:access,
-                role:role
-              }).then((newDoc)=>{
-                fulfill(newDoc);
+          if (errors.length < 1) {
+            documents.documentExists(title).then(() => {
+              fail({
+                statusCode: 403,
+                message: 'Document already exists',
               });
-            });
-          }else{
-            fail({statusCode: 403, message: errors});
+            })
+              .catch(() => {
+                documents.create({
+                  title,
+                  content,
+                  ownerId,
+                  access,
+                  role,
+                }).then((newDoc) => {
+                  fulfill(newDoc);
+                });
+              });
+          } else {
+            fail({ statusCode: 403, message: errors });
           }
         });
-
       },
 
-      getDoc: function(uid, id){
-        return new Promise((fulfill, fail)=>{
+      getDoc: (uid, id) => {
+        return new Promise((fulfill, fail) => {
           documents.findOne({
             where: {
-              id: id
-            }
-          }).then((document)=>{
-            if(document){
-              if(document.ownerId === uid){
+              id,
+            },
+          }).then((document) => {
+            if (document) {
+              if (document.ownerId === uid) {
                 fulfill(document);
-              }else if(document.access === 'public'){
+              } else if (document.access === 'public') {
                 fulfill(document);
-              }else{
-                fail({statusCode: 403, message: 'You do not have permissions to view this document'});
+              } else {
+                fail({
+                  statusCode: 403,
+                  message: 'You do not have permissions to view this document',
+                });
               }
-            }else{
-              fail({statusCode: 404, message: 'Document does not exists'});
+            } else {
+              fail({
+                statusCode: 404,
+                message: 'Document does not exists',
+              });
             }
-          }).catch((error)=>{
-            fail({statusCode: 500, message: error});
-          })
-
+          }).catch((error) => {
+            fail({
+              statusCode: 500,
+              message: error,
+            });
+          });
         });
       },
 
-      documentExists: function(title){
-        return new Promise((fulfill, fail)=>{
+      documentExists: (title) => {
+        return new Promise((fulfill, fail) => {
           documents.find({
-            where:{
-              title: title
-            }
-          }).then((doc)=>{
-            if(doc){
-              fulfill(doc);
-            }else{
-              fail('Not found');
-            }
-          }).catch((error)=>{
-            fail(error)
+            where: {
+              title,
+            },
           })
+            .then((doc) => {
+              if (doc) {
+                fulfill(doc);
+              } else {
+                fail('Not found');
+              }
+            })
+            .catch((error) => {
+              fail(error);
+            });
         });
       },
 
-      all: function(limit, offset, byRole, byDate, uid, role){
-        return new Promise((fulfill, fail)=>{
-
-          let modifiers = {order:[['createdAt', 'DESC']]};
-          if(limit){
+      all: (limit, offset, byRole, byDate, uid, role) => {
+        return new Promise((fulfill, fail) => {
+          const modifiers = { order: [['createdAt', 'DESC']] };
+          if (limit) {
             modifiers.limit = limit;
           }
 
-          if(offset){
+          if (offset) {
             modifiers.offset = offset;
           }
 
-          if(byRole && byDate){
-
+          if (byRole && byDate) {
             modifiers.where = {
               role: byRole,
-              createdAt:{
-                $gte: byDate
-              }
+              createdAt: {
+                $gte: byDate,
+              },
             };
-
-          }else if(byRole){
-            modifiers.where ={
-              role: byRole
-            };
-
-          }else if(byDate){
+          } else if (byRole) {
             modifiers.where = {
-              createdAt:{
-                $gte: byDate
-              }
+              role: byRole,
+            };
+          } else if (byDate) {
+            modifiers.where = {
+              createdAt: {
+                $gte: byDate,
+              },
             };
           }
-          documents.findAll(modifiers).then((docs)=>{
-            fulfill(documents.filterDocs(docs, uid, role));
-          }).catch((error)=>{
-            fail(error);
-          });
 
-        });
-
-      },
-      //req, verifyToken.id, verifyToken.role
-      update: function(id, ownerId, update) {
-
-        return new Promise((fulfill, fail)=>{
-
-          documents.getDoc(ownerId, id).then((the_doc)=>{
-            if(the_doc.ownerId === ownerId){
-              the_doc.updateAttributes(update)
-                .then((new_doc)=>{
-                  fulfill(new_doc);
-                }).catch((error)=>{
-                fail({statusCode: 500, message: error});
-              })
-            }else{
-              fail({
-                statusCode: 403,
-                message: 'You do not have permission to update this document'});
-            }
-          }).catch((error)=>{
-            fail({
-              statusCode: 500,
-              message: error
+          documents.findAll(modifiers)
+            .then((docs) => {
+              fulfill(documents.filterDocs(docs, uid, role));
+            })
+            .catch((error) => {
+              fail(error);
             });
-          });
         });
       },
 
-      filterDocs: function(docs, uid, userRole){
-        let doc, filteredDoc = [];
-        for(doc of docs) {
+      update: (id, ownerId, update) => {
+        return new Promise((fulfill, fail) => {
+          documents.getDoc(ownerId, id)
+            .then((doc) => {
+              if (doc.ownerId === ownerId) {
+                doc.updateAttributes(update)
+                  .then((newDoc) => {
+                    fulfill(newDoc);
+                  })
+                  .catch((error) => {
+                    fail({ statusCode: 500, message: error });
+                  });
+              } else {
+                fail({
+                  statusCode: 403,
+                  message: 'You do not have permission to update this document',
+                });
+              }
+            })
+            .catch((error) => {
+              fail({
+                statusCode: 500,
+                message: error,
+              });
+            });
+        });
+      },
 
-          if(userRole === 'admin'){
+      filterDocs: (docs, uid, userRole) => {
+        let doc;
+        const filteredDoc = [];
+        for (doc of docs) {
+          if (userRole === 'admin') {
             filteredDoc.push(doc);
-          }else if(doc.ownerId === uid) {
-
+          } else if (doc.ownerId === uid) {
             filteredDoc.push(doc);
-
-          }else if(doc.role == userRole) {
-
-           filteredDoc.push(doc);
-
-           }else if(doc.access === 'public') {
-
+          } else if (doc.role === userRole) {
             filteredDoc.push(doc);
-
+          } else if (doc.access === 'public') {
+            filteredDoc.push(doc);
           }
         }
 
         return filteredDoc;
-
       },
 
-      deleteDoc: function(id, ownerId) {
-        return new Promise((fulfill, fail)=>{
-          documents.getDoc(ownerId, id).then((the_doc)=>{
-            if(the_doc.ownerId === ownerId){
-              the_doc.destroy({
-                where: {
-                  id: id
-                }
-              }).then(()=>{
-                fulfill('Document deleted successfully');
-              }).catch((error)=>{
-                fail({statusCode: 500, message: error});
-              });
-            }else{
-              fail({
-                statusCode: 403,
-                message: 'You do not have permission to delete this document'
-              });
-            }
-          }).catch((errorDetails)=>{
-            fail(errorDetails);
-          })
+      deleteDoc: (id, ownerId) => {
+        return new Promise((fulfill, fail) => {
+          documents.getDoc(ownerId, id)
+            .then((doc) => {
+              if (doc.ownerId === ownerId) {
+                doc.destroy({
+                  where: {
+                    id,
+                  },
+                }).then(() => {
+                  fulfill('Document deleted successfully');
+                }).catch((error) => {
+                  fail({ statusCode: 500, message: error });
+                });
+              } else {
+                fail({
+                  statusCode: 403,
+                  message: 'You do not have permission to delete this document',
+                });
+              }
+            })
+            .catch((errorDetails) => {
+              fail(errorDetails);
+            });
         });
-      }
-    }
+      },
+    },
   });
   return documents;
 };
