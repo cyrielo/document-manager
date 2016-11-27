@@ -1,19 +1,27 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const config = require('./../config/config');
+class Authenticate {
+  constructor() {
+    const express = require('express');
+    this.jwt = require('jsonwebtoken');
+    this.config = require('./../config/config');
 
-const router = express.Router();
-router.use((req, res, next) => {
-  const token = req.headers.authorization;
-  try {
-    jwt.verify(token, config.secrete);
-    next();
-  } catch (error) {
-    res.status(401).json({
-      status: 'fail',
-      message: 'Authorization failed; Token mismatch!',
-    });
+    this.router = express.Router();
   }
-});
 
-module.exports = router;
+  route() {
+    this.router.use((req, res, next) => {
+      const token = req.headers.authorization;
+      try {
+        this.jwt.verify(token, this.config.secrete);
+        next();
+      } catch (error) {
+        res.status(401).json({
+          status: 'fail',
+          message: 'Authorization failed; Token mismatch!',
+        });
+      }
+    });
+    return this.router;
+  }
+}
+
+module.exports = new Authenticate().route();
