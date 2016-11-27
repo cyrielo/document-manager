@@ -1,28 +1,44 @@
-'use strict';
-const express = require('express');
-const router = express.Router();
-const authenticate = require('./../middleware/authenticate');
-const authorize = require('./../middleware/authorize');
-const rolesCtrl = require('./../controllers/roles');
-const Role = new rolesCtrl();
+class Roles{
+  constructor() {
+    const express = require('express');
+    this.authenticate = require('./../middleware/authenticate');
+    this.authorize = require('./../middleware/authorize');
+    const RolesCtrl = require('./../controllers/roles');
 
-router.route('/')
-  .get(authenticate, authorize, (req, res)=>{
-    Role.all(req, res);
-  })
-  .post(authenticate, authorize, (req, res)=>{
-    Role.createRole(req, res);
-  });
+    this.router = express.Router();
+    this.rolesCtrl = new RolesCtrl();
 
-router.route('/:id')
-  .get(authenticate, (req, res)=>{
-    Role.getRole(req, res);
-  })
-  .delete(authenticate, authorize, (req, res)=>{
-    Role.deleteRole(req, res);
-  })
-  .put(authenticate, authorize, (req, res)=>{
-    Role.updateRole(req, res);
-  });
+    this.baseRoute();
+    this.baseRouteParam();
+  }
 
-module.exports = router;
+  route() {
+    return this.router;
+  }
+
+  baseRoute() {
+    this.router.route('/')
+      .get(this.authenticate, this.authorize, (req, res) => {
+        this.rolesCtrl.all(req, res);
+      })
+      .post(this.authenticate, this.authorize, (req, res) => {
+        this.rolesCtrl.createRole(req, res);
+      });
+
+  }
+
+  baseRouteParam() {
+    this.router.route('/:id')
+      .get(this.authenticate, (req, res) => {
+        this.rolesCtrl.getRole(req, res);
+      })
+      .delete(this.authenticate, this.authorize, (req, res) => {
+        this.rolesCtrl.deleteRole(req, res);
+      })
+      .put(this.authenticate, this.authorize, (req, res) => {
+        this.rolesCtrl.updateRole(req, res);
+      });
+  }
+}
+
+module.exports = new Roles().route();

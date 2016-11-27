@@ -1,33 +1,50 @@
 /**
  * Created by cyrielo on 11/10/16.
  */
-const express = require('express');
-const userRoute = require('./user');
-const docRoute = require('./document');
-const roleRoute = require('./role');
+class Base {
+  constructor() {
+    const express = require('express');
+    this.userRoute = require('./user');
+    this.docRoute = require('./document');
+    this.roleRoute = require('./role');
 
-(() => {
-  const router = express.Router();
+    this.router = express.Router();
+    this.loadRoutes();
+    this.baseRoute();
+    this.apiRoot();
+  }
 
-  router.use((req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-    next();
-  });
-  router.use('/api/users', userRoute);
-  router.use('/api/documents', docRoute);
-  router.use('/api/roles', roleRoute);
+  route() {
+    return this.router;
+  }
 
-  router.use('/api', (req, res) => {
-    res.status(404).json({
-      status: 'fail',
-      message: 'The resource does not exist!',
+  loadRoutes() {
+    this.router.use('/api/users', this.userRoute);
+    this.router.use('/api/documents', this.docRoute);
+    this.router.use('/api/roles', this.roleRoute);
+  }
+
+  baseRoute() {
+    this.router.use('/', (req, res) => {
+      res.json({
+        message: 'Server root!',
+      });
     });
-  });
+  }
 
-  router.use('/', (req, res) => {
-    res.json({
-      message: 'Server root!',
+  apiRoot() {
+    this.router.use((req, res, next) => {
+      res.setHeader('Content-Type', 'application/json');
+      next();
     });
-  });
-  module.exports = router;
-})();
+
+    this.router.use('/api', (req, res) => {
+      res.status(404).json({
+        status: 'fail',
+        message: 'The resource does not exist!',
+      });
+    });
+  }
+}
+
+module.exports = new Base().route();

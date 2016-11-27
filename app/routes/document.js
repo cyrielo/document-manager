@@ -1,28 +1,43 @@
-'use strict';
-const express = require('express');
-const router = express.Router();
-const authenticate = require('./../middleware/authenticate');
-const authorize = require('./../middleware/authorize');
-const documentsCtrl = require('./../controllers/documents');
-const document = new documentsCtrl();
+// import {express} from "express";
 
-router.route('/')
-  .post(authenticate, function(req, res) {
-    document.createDoc(req, res);
-  }).get(authenticate, function(req, res){
-    document.all(req, res);
-  });
+class Document {
+  constructor() {
+    const express = require('express');
+    this.authenticate = require('./../middleware/authenticate');
+    this.authorize = require('./../middleware/authorize');
+    const DocumentsCtrl = require('./../controllers/documents');
 
+    this.router = express.Router();
+    this.documentCtrl = new DocumentsCtrl();
+    this.documentBaseRoute();
+    this.documentBaseParam();
+  }
 
-router.route('/:id')
-  .get(authenticate, function(req, res){
-    document.getDoc(req, res);
-  })
-  .put(authenticate, function (req, res) {
-    document.updateDoc(req, res);
-  })
-  .delete(authenticate, function (req, res) {
-    document.deleteDoc(req, res);
-  });
+  route() {
+    return this.router;
+  }
 
-module.exports = router;
+  documentBaseRoute() {
+    this.router.route('/')
+      .post(this.authenticate, (req, res) => {
+        this.documentCtrl.createDoc(req, res);
+      }).get(this.authenticate, (req, res) => {
+        this.documentCtrl.all(req, res);
+      });
+  }
+
+  documentBaseParam() {
+    this.router.route('/:id')
+      .get(this.authenticate, (req, res) => {
+        this.documentCtrl.getDoc(req, res);
+      })
+      .put(this.authenticate,  (req, res) => {
+        this.documentCtrl.updateDoc(req, res);
+      })
+      .delete(this.authenticate, (req, res) => {
+        this.documentCtrl.deleteDoc(req, res);
+      });
+  }
+}
+
+module.exports = new Document().route();
