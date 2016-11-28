@@ -1,32 +1,54 @@
 /**
  * Created by cyrielo on 11/10/16.
  */
-'use strict';
-(()=>{
-  const express = require('express');
-  const router = express.Router();
-  const userRoute = require('./user');
-  const docRoute = require('./document');
-  const roleRoute = require('./role');
+import express from 'express';
+import User from './user';
+import Document from './document';
+import Role from './role';
 
-  router.use((req, res, next)=>{
-    res.setHeader('Content-Type', 'application/json');
-    next();
-  });
-  router.use('/api/users', userRoute);
-  router.use('/api/documents', docRoute);
-  router.use('/api/roles', roleRoute);
+class Base {
+  constructor() {
+    this.userRoute = User;
+    this.docRoute = Document;
+    this.roleRoute = Role;
 
-  router.use('/api', (req, res)=>{
-    res.json({
-      message: 'Will not process this request!'
-    })
-  });
+    this.router = express.Router();
+    this.loadRoutes();
+    this.baseRoute();
+    this.apiRoot();
+  }
 
-  router.use('/', (req, res)=>{
-    res.json({
-      message: 'Server root!'
-    })
-  });
-  module.exports = router;
-})();
+  route() {
+    return this.router;
+  }
+
+  loadRoutes() {
+    this.router.use('/api/users', this.userRoute);
+    this.router.use('/api/documents', this.docRoute);
+    this.router.use('/api/roles', this.roleRoute);
+  }
+
+  baseRoute() {
+    this.router.use('/', (req, res) => {
+      res.json({
+        message: 'Server root!',
+      });
+    });
+  }
+
+  apiRoot() {
+    this.router.use((req, res, next) => {
+      res.setHeader('Content-Type', 'application/json');
+      next();
+    });
+
+    this.router.use('/api', (req, res) => {
+      res.status(404).json({
+        status: 'fail',
+        message: 'The resource does not exist!',
+      });
+    });
+  }
+}
+
+export default new Base().route();

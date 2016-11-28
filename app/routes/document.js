@@ -1,28 +1,43 @@
-'use strict';
-const express = require('express');
-const router = express.Router();
-const authenticate = require('./../middleware/authenticate');
-const authorize = require('./../middleware/authorize');
-const documentsCtrl = require('./../controllers/documents');
-const document = new documentsCtrl();
+import express from 'express';
+import Authenticate from './../middleware/authenticate';
+import Authorize from './../middleware/authorize';
+import DocumentsCtrl from './../controllers/documents';
 
-router.route('/')
-  .post(authenticate, function(req, res) {
-    document.createDoc(req, res);
-  }).get(authenticate, function(req, res){
-    document.all(req, res);
-  });
+class Document {
+  constructor() {
+    this.authenticate = Authenticate;
+    this.authorize = Authorize;
+    this.router = express.Router();
+    this.documentCtrl = new DocumentsCtrl();
+    this.documentBaseRoute();
+    this.documentBaseParam();
+  }
 
+  route() {
+    return this.router;
+  }
 
-router.route('/:id')
-  .get(authenticate, function(req, res){
-    document.getDoc(req, res);
-  })
-  .put(authenticate, function (req, res) {
-    document.updateDoc(req, res);
-  })
-  .delete(authenticate, function (req, res) {
-    document.deleteDoc(req, res);
-  });
+  documentBaseRoute() {
+    this.router.route('/')
+      .post(this.authenticate, (req, res) => {
+        this.documentCtrl.createDoc(req, res);
+      }).get(this.authenticate, (req, res) => {
+        this.documentCtrl.all(req, res);
+      });
+  }
 
-module.exports = router;
+  documentBaseParam() {
+    this.router.route('/:id')
+      .get(this.authenticate, (req, res) => {
+        this.documentCtrl.getDoc(req, res);
+      })
+      .put(this.authenticate, (req, res) => {
+        this.documentCtrl.updateDoc(req, res);
+      })
+      .delete(this.authenticate, (req, res) => {
+        this.documentCtrl.deleteDoc(req, res);
+      });
+  }
+}
+
+export default new Document().route();

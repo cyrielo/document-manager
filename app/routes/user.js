@@ -1,52 +1,81 @@
 /**
  * Created by cyrielo on 11/8/16.
  */
-"use strict";
-const express = require('express'),
-  router = express.Router(),
-  userCtrl = require('./../controllers/users'),
-  user = new userCtrl(),
-  authenticate = require('./../middleware/authenticate'),
-  authorize = require('./../middleware/authorize');
+import express from 'express';
+import Authenticate from './../middleware/authenticate';
+import Authorize from './../middleware/authorize';
+import UserCtrl from './../controllers/users';
 
-router.route('/')
-  .get(authenticate, authorize,  (req, res) => {
-    user.getUsers(req, res);
-  })
+class User {
+  constructor() {
+    this.authenticate = Authenticate;
+    this.authorize = Authorize;
+    this.router = express.Router();
+    this.userCtrl = new UserCtrl();
 
-  .post((req, res) => {
-    user.register(req, res);
-  });
+    this.baseRoute();
+    this.baseRouteParam();
+    this.loginRoute();
+    this.logoutRoute();
+    this.userDocumentRoute();
+    this.userByEmailRoute();
+  }
 
-router.route('/:id')
-  .get(authenticate, (req, res) => {
-    user.getUser(req, res);
-  })
-  .put(authenticate, (req, res)=>{
-    user.updateUser(req, res);
-  })
-  .delete(authenticate, (req, res)=>{
-    user.deleteUser(req, res);
-  });
+  route() {
+    return this.router;
+  }
 
-router.route('/:id/documents')
-  .get(authenticate, (req, res)=>{
-    user.getUserDocs(req, res);
-  });
+  baseRoute() {
+    this.router.route('/')
+      .get(this.authenticate, this.authorize, (req, res) => {
+        this.userCtrl.getUsers(req, res);
+      })
 
-router.route('/email/:email')
-  .get(authenticate, (req, res) => {
-    user.getUserByEmail(req, res);
-  });
+      .post((req, res) => {
+        this.userCtrl.register(req, res);
+      });
+  }
 
-router.route('/login')
-  .post((req, res)=>{
-    user.login(req, res);
-  });
+  baseRouteParam() {
+    this.router.route('/:id')
+      .get(this.authenticate, (req, res) => {
+        this.userCtrl.getUser(req, res);
+      })
+      .put(this.authenticate, (req, res) => {
+        this.userCtrl.updateUser(req, res);
+      })
+      .delete(this.authenticate, (req, res) => {
+        this.userCtrl.deleteUser(req, res);
+      });
+  }
 
-router.route('/logout')
-  .post(authenticate, (req, res)=>{
-    user.logout(req, res);
-  });
+  loginRoute() {
+    this.router.route('/login')
+      .post((req, res) => {
+        this.userCtrl.login(req, res);
+      });
+  }
 
-module.exports = router;
+  logoutRoute() {
+    this.router.route('/logout')
+      .post(this.authenticate, (req, res) => {
+        this.userCtrl.logout(req, res);
+      });
+  }
+
+  userDocumentRoute() {
+    this.router.route('/:id/documents')
+      .get(this.authenticate, (req, res) => {
+        this.userCtrl.getUserDocs(req, res);
+      });
+  }
+
+  userByEmailRoute() {
+    this.router.route('/email/:email')
+      .get(this.authenticate, (req, res) => {
+        this.userCtrl.getUserByEmail(req, res);
+      });
+  }
+}
+
+export default new User().route();
