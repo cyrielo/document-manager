@@ -29,6 +29,11 @@ router.route('/:id')
     user.deleteUser(req, res);
   });
 
+router.route('/:id/documents')
+  .get(authenticate, (req, res)=>{
+    user.getUserDocs(req, res);
+  });
+
 router.route('/email/:email')
   .get(authenticate, (req, res) => {
     user.getUserByEmail(req, res);

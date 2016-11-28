@@ -99,6 +99,22 @@ describe('User', ()=>{
       });
   });
 
+  it('should ensure new user cannot be created without first and last names.', (done) => {
+    requestHandler.post('/api/users')
+      .set('Accept', 'application/json')
+      .send({
+      firstname: 'Hank',
+      lastname: '',
+      email: 'hank@gmail.com',
+      password: '32156',
+      role: 'admin'
+    }).expect(422)
+      .end((req, res) => {
+        expect(res.body.status).to.equal('fail');
+        expect(res.body.message).to.equal('Unable to create user account!');
+      done();
+    });
+  });
 
   it('should ensure the new user has role defined', (done)=>{
     requestHandler.get('/api/users/email/'+encodeURIComponent(test_user.email))
@@ -289,6 +305,17 @@ describe('Role', ()=>{
       });
   });
 
+  it('should not create role with no title', (done)=>{
+    requestHandler.post('/api/roles')
+      .set('authorization', admin_token)
+      .send({title: ''})
+      .expect(403)
+      .end((err, res)=>{
+        expect(res.body.status).to.be.equal('fail');
+        done();
+      });
+  });
+
   it('should return all roles', (done)=>{
     requestHandler.get('/api/roles')
       .set('authorization', admin_token)
@@ -377,6 +404,19 @@ describe('Document', ()=>{
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Document created successfully');
         document_created = res.body.data;
+        done();
+      });
+  });
+
+  it('should be able to get own documents', (done) => {
+    requestHandler.get('/api/users/5/documents')
+      .set('Accept', 'application/json')
+      .set('authorization', admin_token)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Document listed');
+        expect(res.body.data).to.not.be.undefined;
         done();
       });
   });

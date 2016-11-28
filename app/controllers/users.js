@@ -164,6 +164,26 @@ class Users{
       });
     });
   }
+
+  getUserDocs(req, res){
+    const
+      uid = req.params.id,
+      token = req.headers.authorization;
+    this.models.users.getUserDocs(uid, token).then((data)=>{
+      res.status(200).json({
+        status: 'success',
+        message: 'Document listed',
+        data: data
+      });
+    }).catch((errorDetails)=>{
+      res.status(errorDetails.statusCode).json({
+        status: 'fail',
+        message: errorDetails.message
+      });
+    });
+
+  }
+
 }
 
 module.exports = Users;
