@@ -96,11 +96,11 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
-      documentExists: (title) => {
+      documentExists: (docTitle) => {
         return new Promise((fulfill, fail) => {
           documents.find({
             where: {
-              title,
+              title: docTitle,
             },
           })
             .then((doc) => {
@@ -116,7 +116,7 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
-      all: (limit, offset, byRole, byDate, uid, role) => {
+      all: (limit, offset, byRole, byAccess, byDate, uid, role) => {
         return new Promise((fulfill, fail) => {
           const modifiers = { order: [['createdAt', 'DESC']] };
           if (limit) {
@@ -127,7 +127,15 @@ module.exports = (sequelize, DataTypes) => {
             modifiers.offset = offset;
           }
 
-          if (byRole && byDate) {
+          if (byRole && byDate && byAccess) {
+            modifiers.where = {
+              role: byRole,
+              access: byAccess,
+              createdAt: {
+                $gte: byDate,
+              },
+            };
+          } else if (byRole && byDate) {
             modifiers.where = {
               role: byRole,
               createdAt: {
@@ -144,11 +152,19 @@ module.exports = (sequelize, DataTypes) => {
                 $gte: byDate,
               },
             };
+          } else if (byAccess) {
+            modifiers.where = {
+              access: byAccess,
+            };
           }
 
           documents.findAll(modifiers)
             .then((docs) => {
-              fulfill(documents.filterDocs(docs, uid, role));
+              if (byAccess || byRole) {
+                fulfill(docs);
+              } else {
+                fulfill(documents.filterDocs(docs, uid, role));
+              }
             })
             .catch((error) => {
               fail(error);
@@ -186,16 +202,18 @@ module.exports = (sequelize, DataTypes) => {
 
       filterDocs: (docs, uid, userRole) => {
         let doc;
+        let docValue;
         const filteredDoc = [];
         for (doc of docs) {
+          docValue = doc.dataValues;
           if (userRole === 'admin') {
-            filteredDoc.push(doc);
-          } else if (doc.ownerId === uid) {
-            filteredDoc.push(doc);
-          } else if (doc.role === userRole) {
-            filteredDoc.push(doc);
-          } else if (doc.access === 'public') {
-            filteredDoc.push(doc);
+            filteredDoc.push(docValue);
+          } else if (docValue.ownerId === uid) {
+            filteredDoc.push(docValue);
+          } else if (docValue.role === userRole) {
+            filteredDoc.push(docValue);
+          } else if (docValue.access === 'public') {
+            filteredDoc.push(docValue);
           }
         }
 

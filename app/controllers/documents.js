@@ -26,10 +26,10 @@ class Document {
           data: document,
         });
       })
-      .catch((error) => {
-        res.status(403).json({
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
           status: 'fail',
-          message: error,
+          message: errorDetails.message,
         });
       });
   }
@@ -43,10 +43,11 @@ class Document {
     const limit = req.query.limit;
     const offset = req.query.offset;
     const byRole = req.query.role;
+    const byAccess = req.query.access;
     const byDate = req.query.date;
     const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
 
-    models.documents.all(limit, offset, byRole, byDate, verifyToken.id, verifyToken.role)
+    models.documents.all(limit, offset, byRole, byAccess, byDate, verifyToken.id, verifyToken.role)
       .then((docs) => {
         res.status(200).json({
           status: 'success',
@@ -101,19 +102,19 @@ class Document {
 
     if (!this.validate.isEmpty(title)) {
       update.title = title;
-    } else if (this.validate.isDefined(title)) {
+    } else if (Validator.isDefined(title)) {
       errors.push('Title is empty');
     }
 
     if (!this.validate.isEmpty(content)) {
       update.content = content;
-    } else if (this.validate.isDefined(content)) {
+    } else if (Validator.isDefined(content)) {
       errors.push('Content is empty');
     }
 
     if (!this.validate.isEmpty(access)) {
       update.access = access;
-    } else if (!this.validate.isDefined(access)) {
+    } else if (Validator.isDefined(access)) {
       errors.push('Access is empty');
     }
 
@@ -122,7 +123,7 @@ class Document {
         .then((document) => {
           res.status(201).json({
             status: 'success',
-            message: 'Document created successfully',
+            message: 'Document updated successfully',
             data: document,
           });
         })
