@@ -377,6 +377,28 @@ describe('Role', () => {
         done();
       });
   });
+
+  it('should not delete invalid role', (done) => {
+    requestHandler.delete('/api/roles/6')
+      .set('authorization', adminToken)
+      .expect(404)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('Role does not exist');
+        done();
+      });
+  });
+
+  it('should fail on invalid role request', (done) => {
+    requestHandler.get('/api/roles/6')
+      .set('authorization', token)
+      .expect(404)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('Role does not exists');
+        done();
+      });
+  });
 });
 
 describe('Document', () => {
@@ -494,6 +516,148 @@ describe('Document', () => {
         expect(res.body.message).to.be.equal('Documents listed');
         expect(res.body.data.length).to.be.equal(1);
         expect(res.body.data[0].id).to.be.equal(3);
+        done();
+      });
+  });
+
+  it('should be able to update document', (done) => {
+    requestHandler.put('/api/documents/6')
+      .set('authorization', adminToken)
+      .send({
+        title: 'My updated document',
+        content: 'Dynamic document',
+      })
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Document updated successfully');
+        done();
+      });
+  });
+
+  it('should not be able to update document with incorrect details', (done) => {
+    requestHandler.put('/api/documents/6')
+      .set('authorization', adminToken)
+      .send({
+        title: '',
+        content: '',
+        access: '',
+      })
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('You have errors in data submitted');
+        done();
+      });
+  });
+
+  it('should not create document without title', (done) => {
+    requestHandler.post('/api/documents/')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .send({
+        content: 'A document with no title',
+      })
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        done();
+      });
+  });
+
+  it('should not create document without content', (done) => {
+    requestHandler.post('/api/documents/')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .send({
+        title: 'Another document',
+      })
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        done();
+      });
+  });
+
+  it('should not create document with invalid access', () => {
+    it('should be able to create document', (done) => {
+      requestHandler.post('/api/documents/')
+        .set('Accept', 'application/json')
+        .set('authorization', adminToken)
+        .send({
+          title: 'A newer document',
+          content: 'This document has invalid access',
+          access: 'asdf',
+        })
+        .expect(403)
+        .end((err, res) => {
+          expect(res.body.status).to.be.equal('fail');
+          done();
+        });
+    });
+  });
+
+  it('should not create document that already exists', (done) => {
+    requestHandler.post('/api/documents/')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .send({
+        title: 'The parable of perry',
+        content: 'The content',
+      })
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('Document already exists');
+        done();
+      });
+  });
+
+  it('should be able to delete document', (done) => {
+    requestHandler.delete('/api/documents/6')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Document deleted successfully');
+        done();
+      });
+  });
+
+  it('should not be able to delete other document', (done) => {
+    requestHandler.delete('/api/documents/3')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('You do not have permissions to view this document');
+        done();
+      });
+  });
+
+  it('should fail on non-existent document request', (done) => {
+    requestHandler.get('/api/documents/8')
+      .set('authorization', token)
+      .expect(404)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('Document does not exists');
+        done();
+      });
+  });
+});
+
+describe('Search', () => {
+  it('should be able to access other user document marked as public', (done) => {
+    requestHandler.get('/api/documents?access=public')
+      .set('authorization', token)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Documents listed');
+        expect(res.body.data.length).to.be.equal(2);
         done();
       });
   });
