@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 
 dotenv.config({ silent: true });
 const config = {
@@ -17,6 +17,7 @@ const config = {
     host: process.env.DB_TEST_HOST,
     secrete: process.env.AUTH_SECRETE,
     dialect: 'postgres',
+    logging: false,
   },
   production: {
     username: process.env.DB_USER,
@@ -29,10 +30,16 @@ const config = {
   },
 };
 
+let tempEnv;
+
 if (process.env.NODE_ENV === 'production') {
-  module.exports = config.production;
+  tempEnv = config.production;
 } else if (process.env.NODE_ENV === 'test') {
-  module.exports = config.test;
+  tempEnv = config.test;
 } else {
-  module.exports = config.development;
+  tempEnv = config.development;
 }
+
+const environment = (tempEnv);
+
+export default environment;

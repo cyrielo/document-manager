@@ -1,8 +1,19 @@
+import jwt from 'jsonwebtoken';
+import Validator from './../helpers/validate';
+import config from './../config/config';
+
 module.exports = (sequelize, DataTypes) => {
   const users = sequelize.define('users', {
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
-    email: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+      unique: true,
+    },
     password: DataTypes.STRING,
     role: DataTypes.STRING,
   }, {
@@ -13,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
 
       register: (req) => {
         return new Promise((fulfil, fail) => {
-          const Validator = require('./../helpers/validate');
-          const config = require('./../config/config');
-          const jwt = require('jsonwebtoken');
-
           const validate = new Validator();
           const firstname = req.body.firstname;
           const lastname = req.body.lastname;
@@ -85,10 +92,6 @@ module.exports = (sequelize, DataTypes) => {
 
       login: (req) => {
         return new Promise((fulfill, fail) => {
-          const Validator = require('./../helpers/validate');
-          const config = require('./../config/config');
-          const jwt = require('jsonwebtoken');
-
           const validate = new Validator();
           const email = req.body.email;
           const password = req.body.password;
@@ -221,10 +224,6 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       updateUser: (id, update, token) => {
-        const validator = require('./../helpers/validate');
-        const jwt = require('jsonwebtoken');
-        const config = require('./../config/config');
-
         return new Promise((fulfill, fail) => {
           users.find({
             where: {
@@ -253,8 +252,6 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       deleteUser: (id, token) => {
-        const jwt = require('jsonwebtoken');
-        const config = require('./../config/config');
         const decoded = jwt.verify(token, config.secrete);
 
         return new Promise((fulfill, fail) => {
@@ -287,9 +284,6 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       getUserDocs: (uid, token) => {
-        const jwt = require('jsonwebtoken');
-        const config = require('./../config/config');
-
         const decoded = jwt.verify(token, config.secrete);
 
         return new Promise((fulfill, fail) => {

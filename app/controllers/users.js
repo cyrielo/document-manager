@@ -1,8 +1,10 @@
+import AllModels from './../models/index';
+import Validator from './../helpers/validate';
+
 class Users {
 
   constructor() {
-    this.models = require('./../models/index');
-    const Validator = require('./../helpers/validate');
+    this.models = AllModels;
     this.validate = new Validator();
   }
 
@@ -177,4 +179,4 @@ class Users {
   }
 }
 
-module.exports = Users;
+export default Users;

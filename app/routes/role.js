@@ -1,10 +1,12 @@
-class Roles{
-  constructor() {
-    const express = require('express');
-    this.authenticate = require('./../middleware/authenticate');
-    this.authorize = require('./../middleware/authorize');
-    const RolesCtrl = require('./../controllers/roles');
+import express from 'express';
+import Authenticate from './../middleware/authenticate';
+import Authorize from './../middleware/authorize';
+import RolesCtrl from './../controllers/roles';
 
+class Roles {
+  constructor() {
+    this.authenticate = Authenticate;
+    this.authorize = Authorize;
     this.router = express.Router();
     this.rolesCtrl = new RolesCtrl();
 
@@ -24,7 +26,6 @@ class Roles{
       .post(this.authenticate, this.authorize, (req, res) => {
         this.rolesCtrl.createRole(req, res);
       });
-
   }
 
   baseRouteParam() {
@@ -41,4 +42,4 @@ class Roles{
   }
 }
 
-module.exports = new Roles().route();
+export default new Roles().route();

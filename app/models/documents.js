@@ -1,3 +1,5 @@
+import Validator from './../helpers/validate';
+
 module.exports = (sequelize, DataTypes) => {
   const documents = sequelize.define('documents', {
     title: DataTypes.STRING,
@@ -19,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
           const content = req.body.content;
           let access = req.body.access;
 
-          const Validator = require('./../helpers/validate');
           const validate = new Validator();
 
           const errors = [];

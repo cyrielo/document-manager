@@ -1,6 +1,8 @@
+import AllModels from '../models/index';
+
 class Roles {
   constructor() {
-    this.models = require('../models/index');
+    this.models = AllModels;
   }
 
   createRole(req, res) {
@@ -84,7 +86,8 @@ class Roles {
           message: 'Role info loaded',
           data: roles,
         });
-      }).catch((errorDetails) => {
+      })
+      .catch((errorDetails) => {
         res.status(errorDetails.statusCode).json({
           status: 'fail',
           message: errorDetails.message,
@@ -94,4 +97,4 @@ class Roles {
 
 }
 
-module.exports = Roles;
+export default Roles;

@@ -1,14 +1,15 @@
 /**
  * Created by cyrielo on 11/8/16.
  */
+import express from 'express';
+import Authenticate from './../middleware/authenticate';
+import Authorize from './../middleware/authorize';
+import UserCtrl from './../controllers/users';
 
 class User {
   constructor() {
-    const express = require('express');
-    this.authenticate = require('./../middleware/authenticate');
-    this.authorize = require('./../middleware/authorize');
-    const UserCtrl = require('./../controllers/users');
-
+    this.authenticate = Authenticate;
+    this.authorize = Authorize;
     this.router = express.Router();
     this.userCtrl = new UserCtrl();
 
@@ -77,4 +78,4 @@ class User {
   }
 }
 
-module.exports = new User().route();
+export default new User().route();

@@ -1,12 +1,12 @@
-// import {express} from "express";
+import express from 'express';
+import Authenticate from './../middleware/authenticate';
+import Authorize from './../middleware/authorize';
+import DocumentsCtrl from './../controllers/documents';
 
 class Document {
   constructor() {
-    const express = require('express');
-    this.authenticate = require('./../middleware/authenticate');
-    this.authorize = require('./../middleware/authorize');
-    const DocumentsCtrl = require('./../controllers/documents');
-
+    this.authenticate = Authenticate;
+    this.authorize = Authorize;
     this.router = express.Router();
     this.documentCtrl = new DocumentsCtrl();
     this.documentBaseRoute();
@@ -31,7 +31,7 @@ class Document {
       .get(this.authenticate, (req, res) => {
         this.documentCtrl.getDoc(req, res);
       })
-      .put(this.authenticate,  (req, res) => {
+      .put(this.authenticate, (req, res) => {
         this.documentCtrl.updateDoc(req, res);
       })
       .delete(this.authenticate, (req, res) => {
@@ -40,4 +40,4 @@ class Document {
   }
 }
 
-module.exports = new Document().route();
+export default new Document().route();

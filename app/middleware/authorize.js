@@ -1,9 +1,11 @@
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import config from './../config/config';
+
 class Authorize {
   constructor() {
-    const express = require('express');
-    this.jwt = require('jsonwebtoken');
-    this.config = require('./../config/config');
-
+    this.jwt = jwt;
+    this.config = config;
     this.router = express.Router();
   }
 
@@ -32,4 +34,4 @@ class Authorize {
   }
 }
 
-module.exports = new Authorize().route();
+export default new Authorize().route();

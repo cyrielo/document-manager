@@ -1,12 +1,16 @@
 /**
  * Created by cyrielo on 11/10/16.
  */
+import express from 'express';
+import User from './user';
+import Document from './document';
+import Role from './role';
+
 class Base {
   constructor() {
-    const express = require('express');
-    this.userRoute = require('./user');
-    this.docRoute = require('./document');
-    this.roleRoute = require('./role');
+    this.userRoute = User;
+    this.docRoute = Document;
+    this.roleRoute = Role;
 
     this.router = express.Router();
     this.loadRoutes();
@@ -47,4 +51,4 @@ class Base {
   }
 }
 
-module.exports = new Base().route();
+export default new Base().route();

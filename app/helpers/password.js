@@ -1,9 +1,11 @@
+import bcrypt from 'bcryptjs';
+
 class Password {
   constructor() {
-    this.bcrypt = require('bcryptjs');
+    this.bcrypt = bcrypt;
   }
 
-  compare(passwordStr, passwordHash){
+  compare(passwordStr, passwordHash) {
     return this.bcrypt.compareSync(passwordStr, passwordHash);
   }
 
@@ -12,4 +14,4 @@ class Password {
     return this.bcrypt.hashSync(passwordStr, salt);
   }
 }
-module.exports = Password;
+export default Password;

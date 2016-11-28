@@ -1,12 +1,13 @@
+import Password from './../helpers/password';
+
 class Validate {
 
   constructor() {
-    const PasswordHelper = require('./../helpers/password');
-    this.password = new PasswordHelper();
+    this.password = new Password();
   }
 
   email(email) {
-    if (!this.isDefined(email)) {
+    if (!Validate.isDefined(email)) {
       return false;
     }
 
@@ -19,14 +20,14 @@ class Validate {
   }
 
   isEmpty(str) {
-    if (!this.isDefined(str)) {
+    if (!Validate.isDefined(str)) {
       return true;
     }
 
     return (str.trim().length < 1);
   }
 
-  isDefined(str) {
+  static isDefined(str) {
     return (typeof str !== 'undefined');
   }
 
@@ -40,4 +41,4 @@ class Validate {
 
 }
 
-module.exports = Validate;
+export default Validate;

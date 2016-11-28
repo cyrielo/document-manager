@@ -1,8 +1,10 @@
+import Password from './../helpers/password';
+import models from '../models/index';
+
 class Seeder {
   constructor() {
-    this.models = require('../models/index');
-    const PasswordHelper = require('./../helpers/password');
-    this.pass = new PasswordHelper();
+    this.models = models;
+    this.pass = new Password();
   }
 
   init() {
@@ -109,4 +111,4 @@ class Seeder {
   }
 }
 
-module.exports = new Seeder().init();
+export default new Seeder().init();

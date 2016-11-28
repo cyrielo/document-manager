@@ -1,5 +1,6 @@
-module.exports = function(sequelize, DataTypes) {
+import Validator from './../helpers/validate';
 
+module.exports = (sequelize, DataTypes) => {
   const roles = sequelize.define('roles', {
     title: DataTypes.STRING,
   }, {
@@ -9,12 +10,11 @@ module.exports = function(sequelize, DataTypes) {
       },
 
       createRole: (title) => {
-        const Validator = require('./../helpers/validate');
         const validate = new Validator();
 
         return new Promise((fulfill, fail) => {
           if (!validate.isEmpty(title)) {
-            roles.roleExists(title).then(()=>{
+            roles.roleExists(title).then(() => {
               fail({
                 statusCode: 403,
                 message: 'Role already exists',
