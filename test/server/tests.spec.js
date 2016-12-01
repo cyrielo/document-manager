@@ -661,4 +661,29 @@ describe('Search', () => {
         done();
       });
   });
+
+  it('should get limited documents', (done) => {
+    requestHandler.get('/api/documents?limit=1')
+      .set('authorization', adminToken)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Documents listed');
+        expect(res.body.data.length).to.be.equal(1);
+        done();
+      });
+  });
+
+  it('should get limited documents', (done) => {
+    requestHandler.get('/api/documents?limit=1&role=regular')
+      .set('authorization', adminToken)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('success');
+        expect(res.body.message).to.be.equal('Documents listed');
+        expect(res.body.data.length).to.be.equal(1);
+        expect(res.body.data[0].role).to.be.equal('regular');
+        done();
+      });
+  });
 });
