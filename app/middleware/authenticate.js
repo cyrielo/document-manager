@@ -1,29 +1,30 @@
-import express from 'express';
 import jwt from 'jsonwebtoken';
 import config from './../config/config';
 
+/**
+ * Authentication middleware to intercept and authenticate requests
+ *@class Authenticate
+ */
 class Authenticate {
-  constructor() {
-    this.jwt = jwt;
-    this.config = config;
-    this.router = express.Router();
-  }
-
-  route() {
-    this.router.use((req, res, next) => {
-      const token = req.headers.authorization;
-      try {
-        this.jwt.verify(token, this.config.secrete);
-        next();
-      } catch (error) {
-        res.status(401).json({
-          status: 'fail',
-          message: 'Authorization failed; Token mismatch!',
-        });
-      }
-    });
-    return this.router;
+  /**
+   * A static route that processes the request
+   * @method route
+   * @param {Object} req
+   * @param {Object} res
+   * @param {Function} next
+  */
+  static route(req, res, next) {
+    const token = req.headers.authorization;
+    try {
+      jwt.verify(token, config.secret);
+      next();
+    } catch (error) {
+      res.status(401).json({
+        status: 'fail',
+        message: 'Authorization failed; Token mismatch!',
+      });
+    }
   }
 }
 
-export default new Authenticate().route();
+export default Authenticate;
