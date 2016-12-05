@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from './../config/config';
-import models from './../models/index';
+import models from './../models';
 import Validator from './../helpers/validate';
 
 /**

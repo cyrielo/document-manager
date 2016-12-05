@@ -1,4 +1,4 @@
-import AllModels from './../models/index';
+import AllModels from './../models';
 import Validator from './../helpers/validate';
 
 class Users {

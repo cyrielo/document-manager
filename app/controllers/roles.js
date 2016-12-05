@@ -1,4 +1,4 @@
-import AllModels from '../models/index';
+import AllModels from '../models/';
 
 class Roles {
   constructor() {
