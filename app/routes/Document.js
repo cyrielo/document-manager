@@ -3,7 +3,15 @@ import Authenticate from './../middleware/authenticate';
 import Authorize from './../middleware/authorize';
 import DocumentsCtrl from './../controllers/Documents';
 
+/**
+ * Document route
+ * @class Document
+ */
 class Document {
+  /**
+   * Loads the middleware and creates Document controller instance
+   * @method constructor
+  */
   constructor() {
     this.authenticate = Authenticate.route;
     this.authorize = Authorize.route;
@@ -13,10 +21,20 @@ class Document {
     this.documentBaseParam();
   }
 
+  /**
+   * Returns the express router for the document
+   * @method route
+   * @return Router
+  */
   route() {
     return this.router;
   }
 
+  /**
+   * Calls the controller for processing request made to the document root
+   * @method documentBaseRoute
+   * @return undefined
+   */
   documentBaseRoute() {
     this.router.route('/')
       .post(this.authenticate, (req, res) => {
@@ -26,6 +44,12 @@ class Document {
       });
   }
 
+  /**
+   * Calls the controller for processing request made to the document with
+   * query string parameter
+   * @method documentBaseParam
+   * @return undefined
+   */
   documentBaseParam() {
     this.router.route('/:id')
       .get(this.authenticate, (req, res) => {

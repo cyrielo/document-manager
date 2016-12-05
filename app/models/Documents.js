@@ -1,5 +1,9 @@
 import Validator from './../helpers/validate';
 
+/**
+ * Document model
+ * @class Document
+ */
 const DocumentsModel = (sequelize, DataTypes) => {
   const Documents = sequelize.define('Documents', {
     title: DataTypes.STRING,
@@ -13,6 +17,14 @@ const DocumentsModel = (sequelize, DataTypes) => {
         // associations can be defined here
       },
 
+      /**
+       * Creates a new document entry in the database
+       * @method createDoc
+       * @param {Object} req
+       * @param {String, int} ownerId
+       * @param {String} role
+       * @return Promise
+       */
       createDoc: (req, ownerId, role) => {
 
         return new Promise((fulfill, fail) => {
@@ -62,6 +74,13 @@ const DocumentsModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieve a specific document from the database
+       * @method getDoc
+       * @param {String, int} uid user id
+       * @param {String, int} id document id
+       * @return Promise
+       */
       getDoc: (uid, id) => {
         return new Promise((fulfill, fail) => {
           Documents.findOne({
@@ -95,6 +114,11 @@ const DocumentsModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Asserts if a document exists in the database
+       * @param {String} docTitle
+       * @return Promise
+       */
       documentExists: (docTitle) => {
         return new Promise((fulfill, fail) => {
           Documents.find({
@@ -115,6 +139,18 @@ const DocumentsModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieves all document from the database based on different criteria
+       * @method all
+       * @param {String, int} limit
+       * @param {String, int} offset
+       * @param {String} byRole
+       * @param {String} byAccess
+       * @param {String} byDate
+       * @param {String, int} uid
+       * @param {String} role
+       * @return Promise
+       */
       all: (limit, offset, byRole, byAccess, byDate, uid, role) => {
         return new Promise((fulfill, fail) => {
           const modifiers = { order: [['createdAt', 'DESC']] };
@@ -171,6 +207,14 @@ const DocumentsModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Updates a document with new details
+       * @method update
+       * @param {String, int} id
+       * @param {String, int} ownerId
+       * @param {Object} update
+       * @return Promise
+      */
       update: (id, ownerId, update) => {
         return new Promise((fulfill, fail) => {
           Documents.getDoc(ownerId, id)
@@ -199,6 +243,14 @@ const DocumentsModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Filters document to contorl visibility based on document
+       * @method filterDocs
+       * @param {Array} docs
+       * @param {String, int} uid
+       * @param {String} userRole
+       * @return Array
+       */
       filterDocs: (docs, uid, userRole) => {
         let doc;
         let docValue;
@@ -219,6 +271,13 @@ const DocumentsModel = (sequelize, DataTypes) => {
         return filteredDoc;
       },
 
+      /**
+       * Removes a document entry
+       * @method deleteDoc
+       * @param {String, int} id
+       * @param {String, int} ownerId
+       * @return Promise
+      */
       deleteDoc: (id, ownerId) => {
         return new Promise((fulfill, fail) => {
           Documents.getDoc(ownerId, id)
