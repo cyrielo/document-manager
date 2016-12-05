@@ -1,15 +1,31 @@
 import AllModels from './../models';
 import Validator from './../helpers/validate';
 
+/**
+ * User controllers for handling user based requests
+ * @class Users
+*/
 class Users {
 
+  /**
+   * Creates an instance of the validator to be used
+   * @method constructor
+  */
   constructor() {
     this.models = AllModels;
     this.validate = new Validator();
   }
 
+  /**
+   * Calls the User model to log user in,
+   * and finalise server response
+   * @method login
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+  */
   login(req, res) {
-    this.models.users.login(req).then((user) => {
+    this.models.Users.login(req).then((user) => {
       res.status(200).json({
         status: 'success',
         message: 'Successful login',
@@ -24,8 +40,16 @@ class Users {
       });
   }
 
+  /**
+   * Registers a new user by calling the User model
+   * Finalises server response
+   * @method register
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   register(req, res) {
-    this.models.users.register(req)
+    this.models.Users.register(req)
       .then((user) => {
         res.status(201).json({
           status: 'success',
@@ -42,6 +66,13 @@ class Users {
       });
   }
 
+  /**
+   * Logouts a logged in user
+   * @method logout
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+  */
   logout(req, res) {
     res.status(200).json({
       status: 'success',
@@ -49,8 +80,15 @@ class Users {
     });
   }
 
+  /**
+   * Retrieves all users from the database
+   * @method getUsers
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+  */
   getUsers(req, res) {
-    this.models.users.getUsers()
+    this.models.Users.getUsers()
       .then((users) => {
         res.status(200).json({
           status: 'success',
@@ -67,8 +105,15 @@ class Users {
       });
   }
 
+  /**
+   * Retrieves a specific user from the database
+   * @method getUser
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   getUser(req, res) {
-    this.models.users.getUser(req.params.id)
+    this.models.Users.getUser(req.params.id)
       .then((user) => {
         res.status(200).json({
           status: 'success',
@@ -84,9 +129,16 @@ class Users {
       });
   }
 
+  /**
+   * Retrieves a specific user by email address from the database
+   * @method getUserByEmail
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   getUserByEmail(req, res) {
     const email = decodeURIComponent(req.params.email);
-    this.models.users.getUserByEmail(email)
+    this.models.Users.getUserByEmail(email)
       .then((user) => {
         res.status(200).json({
           status: 'success',
@@ -102,6 +154,13 @@ class Users {
       });
   }
 
+  /**
+   * Updates user with new validated details
+   * @method updateUser
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   updateUser(req, res) {
     const uid = req.params.id;
     const token = req.headers.authorization;
@@ -128,7 +187,7 @@ class Users {
       update.password = this.validate.hashPassword(password);
     }
 
-    this.models.users.updateUser(uid, update, token).then((user) => {
+    this.models.Users.updateUser(uid, update, token).then((user) => {
       res.status(200).json({
         status: 'success',
         message: 'User updated',
@@ -143,10 +202,17 @@ class Users {
     });
   }
 
+  /**
+   * Deletes a specific user
+   * @method deleteUser
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   deleteUser(req, res) {
     const uid = req.params.id;
     const token = req.headers.authorization;
-    this.models.users.deleteUser(uid, token).then((info) => {
+    this.models.Users.deleteUser(uid, token).then((info) => {
       res.status(200).json({
         status: 'success',
         message: 'Operation successful',
@@ -161,10 +227,17 @@ class Users {
     });
   }
 
+  /**
+   * Gets document created by a specific user
+   * @method getUserDocs
+   * @param {Object} req
+   * @param {Object} res
+   * @return undefined
+   */
   getUserDocs(req, res) {
     const uid = req.params.id;
     const token = req.headers.authorization;
-    this.models.users.getUserDocs(uid, token).then((data) => {
+    this.models.Users.getUserDocs(uid, token).then((data) => {
       res.status(200).json({
         status: 'success',
         message: 'Document listed',

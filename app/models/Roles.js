@@ -1,7 +1,7 @@
 import Validator from './../helpers/validate';
 
-module.exports = (sequelize, DataTypes) => {
-  const roles = sequelize.define('roles', {
+const RoleModel = (sequelize, DataTypes) => {
+  const Roles = sequelize.define('Roles', {
     title: DataTypes.STRING,
   }, {
     classMethods: {
@@ -14,14 +14,14 @@ module.exports = (sequelize, DataTypes) => {
 
         return new Promise((fulfill, fail) => {
           if (!validate.isEmpty(title)) {
-            roles.roleExists(title).then(() => {
+            Roles.roleExists(title).then(() => {
               fail({
                 statusCode: 403,
                 message: 'Role already exists',
               });
             })
               .catch(() => {
-                roles.create({
+                Roles.create({
                   title,
                 }).then((role) => {
                   fulfill(role);
@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
       getRole: (id) => {
         return new Promise((fulfill, fail) => {
-          roles.find({
+          Roles.find({
             where: {
               id,
             },
@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
 
       roleExists: (title) => {
         return new Promise((fulfill, fail) => {
-          roles.find({
+          Roles.find({
             where: {
               title,
             },
@@ -75,28 +75,28 @@ module.exports = (sequelize, DataTypes) => {
 
               fail('Role does not exists');
             }).catch((error) => {
-              fail(error);
-            });
+            fail(error);
+          });
         });
       },
 
       all: () => {
         return new Promise((fulfill, fail) => {
-          roles.findAll()
+          Roles.findAll()
             .then((allRoles) => {
               fulfill(allRoles);
             }).catch((error) => {
-              fail({
-                statusCode: 500,
-                message: error,
-              });
+            fail({
+              statusCode: 500,
+              message: error,
             });
+          });
         });
       },
 
       updateRole: (roleId, title) => {
         return new Promise((fulfill, fail) => {
-          roles.find({
+          Roles.find({
             where: {
               id: roleId,
             },
@@ -108,9 +108,9 @@ module.exports = (sequelize, DataTypes) => {
                 .then((newRole) => {
                   fulfill(newRole);
                 })
-              .catch((error) => {
-                fail(error);
-              });
+                .catch((error) => {
+                  fail(error);
+                });
             })
             .catch((error) => {
               fail(error);
@@ -120,7 +120,7 @@ module.exports = (sequelize, DataTypes) => {
 
       deleteRole: (roleId) => {
         return new Promise((fulfill, fail) => {
-          roles.find({
+          Roles.find({
             where: {
               id: roleId,
             },
@@ -135,11 +135,11 @@ module.exports = (sequelize, DataTypes) => {
                   .then(() => {
                     fulfill('Role deleted');
                   }).catch((error) => {
-                    fail({
-                      statusCode: 500,
-                      message: error,
-                    });
+                  fail({
+                    statusCode: 500,
+                    message: error,
                   });
+                });
               } else {
                 fail({
                   statusCode: 404,
@@ -157,5 +157,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-  return roles;
+  return Roles;
 };
+
+export default RoleModel;

@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import Validator from './../helpers/validate';
 import config from './../config/config';
 
-module.exports = (sequelize, DataTypes) => {
-  const users = sequelize.define('users', {
+const UserModel = (sequelize, DataTypes) => {
+  const Users = sequelize.define('Users', {
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
     email: {
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
           const password = req.body.password;
           const role = req.body.role;
 
-          users.userExists(email)
+          Users.userExists(email)
             .then(() => {
               fail('User already exists!');
             })
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
               }
 
               if (errors.length < 1) {
-                sequelize.models.roles.roleExists(role).then(() => {
+                sequelize.models.Roles.roleExists(role).then(() => {
                   const passwordHash = validate.hashPassword(password);
                   const newUser = {
                     firstname,
@@ -67,18 +67,18 @@ module.exports = (sequelize, DataTypes) => {
                     password: passwordHash,
                     role,
                   };
-                  users.create(newUser)
-                  .then((user) => {
-                    const jwtToken = jwt.sign(user.dataValues,
-                      config.secret, { expiresIn: '24hr' });
-                    fulfil({
-                      user,
-                      token: jwtToken,
+                  Users.create(newUser)
+                    .then((user) => {
+                      const jwtToken = jwt.sign(user.dataValues,
+                        config.secret, { expiresIn: '24hr' });
+                      fulfil({
+                        user,
+                        token: jwtToken,
+                      });
+                    })
+                    .catch((error) => {
+                      fail(error);
                     });
-                  })
-                  .catch((error) => {
-                    fail(error);
-                  });
                 })
                   .catch((error) => {
                     fail(error);
@@ -107,7 +107,7 @@ module.exports = (sequelize, DataTypes) => {
           }
 
           if (errors.length < 1) {
-            users.find({
+            Users.find({
               where: {
                 email,
               },
@@ -129,7 +129,6 @@ module.exports = (sequelize, DataTypes) => {
                       message: 'Invalid email and password combination',
                     });
                   }
-
                 } else {
                   fail({
                     statusCode: 403,
@@ -154,18 +153,18 @@ module.exports = (sequelize, DataTypes) => {
 
       getUsers: () => {
         return new Promise((fulfill, fail) => {
-          users.findAll()
+          Users.findAll()
             .then((allUsers) => {
               fulfill(allUsers);
             }).catch((error) => {
-              fail(error);
-            });
+            fail(error);
+          });
         });
       },
 
       userExists: (email) => {
         return new Promise((fulfill, fail) => {
-          users.find({
+          Users.find({
             where: {
               email,
             },
@@ -185,7 +184,7 @@ module.exports = (sequelize, DataTypes) => {
 
       getUser: (id) => {
         return new Promise((fulfill, fail) => {
-          users.find({
+          Users.find({
             where: {
               id,
             },
@@ -205,7 +204,7 @@ module.exports = (sequelize, DataTypes) => {
 
       getUserByEmail: (email) => {
         return new Promise((fulfill, fail) => {
-          users.find({
+          Users.find({
             where: {
               email,
             },
@@ -225,7 +224,7 @@ module.exports = (sequelize, DataTypes) => {
 
       updateUser: (id, update, token) => {
         return new Promise((fulfill, fail) => {
-          users.find({
+          Users.find({
             where: {
               id,
             },
@@ -255,7 +254,7 @@ module.exports = (sequelize, DataTypes) => {
         const decoded = jwt.verify(token, config.secret);
 
         return new Promise((fulfill, fail) => {
-          users.find({
+          Users.find({
             where: {
               id,
             },
@@ -264,7 +263,7 @@ module.exports = (sequelize, DataTypes) => {
               if (user) {
                 const useremail = decoded.email;
                 if (useremail === user.dataValues.email) {
-                  users.destroy({
+                  Users.destroy({
                     where: {
                       id,
                     },
@@ -278,8 +277,8 @@ module.exports = (sequelize, DataTypes) => {
                 fail('Account does not exists');
               }
             }).catch((error) => {
-              fail(error);
-            });
+            fail(error);
+          });
         });
       },
 
@@ -319,5 +318,8 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-  return users;
+  return Users;
 };
+
+export default UserModel;
+

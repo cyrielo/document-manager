@@ -52,7 +52,7 @@ class Seeder {
         role: 'regular',
       },
     ];
-    return this.models.users.bulkCreate(users);
+    return this.models.Users.bulkCreate(users);
   }
 
   setUpRoles() {
@@ -63,7 +63,7 @@ class Seeder {
         title: 'regular',
       },
     ];
-    return this.models.roles.bulkCreate(roles);
+    return this.models.Roles.bulkCreate(roles);
   }
 
   setUpDocuments() {
