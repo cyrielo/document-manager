@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     classMethods: {
       associate: (models) => {
-        // users.hasMany(models.documents);
+
       },
 
       register: (req) => {
@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
                   users.create(newUser)
                   .then((user) => {
                     const jwtToken = jwt.sign(user.dataValues,
-                      config.secrete, { expiresIn: '24hr' });
+                      config.secret, { expiresIn: '24hr' });
                     fulfil({
                       user,
                       token: jwtToken,
@@ -116,7 +116,7 @@ module.exports = (sequelize, DataTypes) => {
                 if (user) {
                   const passwordHash = user.dataValues.password;
                   if (validate.verifyPassword(password, passwordHash)) {
-                    const jwtToken = jwt.sign(user.dataValues, config.secrete, {
+                    const jwtToken = jwt.sign(user.dataValues, config.secret, {
                       expiresIn: '24hr',
                     });
                     fulfill({
@@ -232,13 +232,13 @@ module.exports = (sequelize, DataTypes) => {
           })
             .then((user) => {
               if (user) {
-                const verifyToken = jwt.verify(token, config.secrete);
+                const verifyToken = jwt.verify(token, config.secret);
                 const usermail = verifyToken.email;
                 const dbemail = user.dataValues.email;
 
                 if (usermail === dbemail) {
                   user.updateAttributes(update).then((newUserInfo) => {
-                    const jwtToken = jwt.sign(user.dataValues, config.secrete, {
+                    const jwtToken = jwt.sign(user.dataValues, config.secret, {
                       expiresIn: '24hr',
                     });
                     fulfill({ user: newUserInfo, token: jwtToken });
@@ -252,7 +252,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       deleteUser: (id, token) => {
-        const decoded = jwt.verify(token, config.secrete);
+        const decoded = jwt.verify(token, config.secret);
 
         return new Promise((fulfill, fail) => {
           users.find({
@@ -284,11 +284,11 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       getUserDocs: (uid, token) => {
-        const decoded = jwt.verify(token, config.secrete);
+        const decoded = jwt.verify(token, config.secret);
 
         return new Promise((fulfill, fail) => {
           if (uid === decoded.id.toString()) {
-            sequelize.models.documents.find({
+            sequelize.models.Documents.find({
               where: {
                 ownerId: uid,
               },

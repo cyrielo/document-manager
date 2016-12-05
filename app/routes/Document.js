@@ -1,12 +1,12 @@
 import express from 'express';
 import Authenticate from './../middleware/authenticate';
 import Authorize from './../middleware/authorize';
-import DocumentsCtrl from './../controllers/documents';
+import DocumentsCtrl from './../controllers/Documents';
 
 class Document {
   constructor() {
-    this.authenticate = Authenticate;
-    this.authorize = Authorize;
+    this.authenticate = Authenticate.route;
+    this.authorize = Authorize.route;
     this.router = express.Router();
     this.documentCtrl = new DocumentsCtrl();
     this.documentBaseRoute();

@@ -107,7 +107,7 @@ class Seeder {
         role: 'admin',
       },
     ];
-    return this.models.documents.bulkCreate(docs);
+    return this.models.Documents.bulkCreate(docs);
   }
 }
 

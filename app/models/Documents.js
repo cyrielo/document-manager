@@ -1,7 +1,7 @@
 import Validator from './../helpers/validate';
 
-module.exports = (sequelize, DataTypes) => {
-  const documents = sequelize.define('documents', {
+const DocumentsModel = (sequelize, DataTypes) => {
+  const Documents = sequelize.define('Documents', {
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     access: DataTypes.STRING,
@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
-        // TODO fix document relationship issues
       },
 
       createDoc: (req, ownerId, role) => {
@@ -40,14 +39,14 @@ module.exports = (sequelize, DataTypes) => {
           }
 
           if (errors.length < 1) {
-            documents.documentExists(title).then(() => {
+            Documents.documentExists(title).then(() => {
               fail({
                 statusCode: 403,
                 message: 'Document already exists',
               });
             })
               .catch(() => {
-                documents.create({
+                Documents.create({
                   title,
                   content,
                   ownerId,
@@ -65,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
 
       getDoc: (uid, id) => {
         return new Promise((fulfill, fail) => {
-          documents.findOne({
+          Documents.findOne({
             where: {
               id,
             },
@@ -98,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
 
       documentExists: (docTitle) => {
         return new Promise((fulfill, fail) => {
-          documents.find({
+          Documents.find({
             where: {
               title: docTitle,
             },
@@ -158,12 +157,12 @@ module.exports = (sequelize, DataTypes) => {
             };
           }
 
-          documents.findAll(modifiers)
+          Documents.findAll(modifiers)
             .then((docs) => {
               if (byAccess || byRole) {
                 fulfill(docs);
               } else {
-                fulfill(documents.filterDocs(docs, uid, role));
+                fulfill(Documents.filterDocs(docs, uid, role));
               }
             })
             .catch((error) => {
@@ -174,7 +173,7 @@ module.exports = (sequelize, DataTypes) => {
 
       update: (id, ownerId, update) => {
         return new Promise((fulfill, fail) => {
-          documents.getDoc(ownerId, id)
+          Documents.getDoc(ownerId, id)
             .then((doc) => {
               if (doc.ownerId === ownerId) {
                 doc.updateAttributes(update)
@@ -222,7 +221,7 @@ module.exports = (sequelize, DataTypes) => {
 
       deleteDoc: (id, ownerId) => {
         return new Promise((fulfill, fail) => {
-          documents.getDoc(ownerId, id)
+          Documents.getDoc(ownerId, id)
             .then((doc) => {
               if (doc.ownerId === ownerId) {
                 doc.destroy({
@@ -248,5 +247,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-  return documents;
+  return Documents;
 };
+
+export default DocumentsModel;

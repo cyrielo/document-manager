@@ -5,8 +5,8 @@ import RolesCtrl from './../controllers/roles';
 
 class Roles {
   constructor() {
-    this.authenticate = Authenticate;
-    this.authorize = Authorize;
+    this.authenticate = Authenticate.route;
+    this.authorize = Authorize.route;
     this.router = express.Router();
     this.rolesCtrl = new RolesCtrl();
 

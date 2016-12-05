@@ -3,7 +3,7 @@
  */
 import express from 'express';
 import User from './user';
-import Document from './document';
+import Document from './Document';
 import Role from './role';
 
 class Base {

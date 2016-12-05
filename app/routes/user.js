@@ -8,8 +8,8 @@ import UserCtrl from './../controllers/users';
 
 class User {
   constructor() {
-    this.authenticate = Authenticate;
-    this.authorize = Authorize;
+    this.authenticate = Authenticate.route;
+    this.authorize = Authorize.route;
     this.router = express.Router();
     this.userCtrl = new UserCtrl();
 
