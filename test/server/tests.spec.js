@@ -13,7 +13,6 @@ const testUser = {
   lastname: 'Trump',
   email: 'alice@gmail.com',
   password: '123456',
-  role: 'regular',
 };
 
 const adminUser =

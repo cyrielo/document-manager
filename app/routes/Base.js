@@ -6,7 +6,15 @@ import User from './User';
 import Document from './Document';
 import Role from './Role';
 
+/**
+ * Base route to load other routes
+ * @class Base
+ */
 class Base {
+  /**
+   * Initialises other routes
+   * @method constructor
+   */
   constructor() {
     this.userRoute = User;
     this.docRoute = Document;
@@ -18,16 +26,29 @@ class Base {
     this.apiRoot();
   }
 
+  /**
+   * Returns the router used by the object
+   * @method route
+   * @return Router
+   */
   route() {
     return this.router;
   }
 
+  /**
+   * Match specific routes to their endpoints
+   * @method loadRoutes
+   */
   loadRoutes() {
     this.router.use('/api/users', this.userRoute);
     this.router.use('/api/documents', this.docRoute);
     this.router.use('/api/roles', this.roleRoute);
   }
 
+  /**
+   * Handles request made to the server roots
+   * @method baseRoute
+   */
   baseRoute() {
     this.router.use('/', (req, res) => {
       res.json({
@@ -36,6 +57,10 @@ class Base {
     });
   }
 
+  /**
+   * Handle request made to the api root
+   * @method apiRoot
+   */
   apiRoot() {
     this.router.use((req, res, next) => {
       res.setHeader('Content-Type', 'application/json');
