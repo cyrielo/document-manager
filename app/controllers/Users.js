@@ -1,5 +1,5 @@
 import AllModels from './../models';
-import Validator from './../helpers/validate';
+import Validator from '../helpers/Validate';
 
 /**
  * User controllers for handling user based requests

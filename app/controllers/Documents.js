@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from './../config/config';
 import models from './../models';
-import Validator from './../helpers/validate';
+import Validator from '../helpers/Validate';
 
 /**
  * Document controller class

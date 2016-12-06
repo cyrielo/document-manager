@@ -1,6 +1,6 @@
 import express from 'express';
-import Authenticate from './../middleware/authenticate';
-import Authorize from './../middleware/authorize';
+import Authenticate from '../middleware/Authenticate';
+import Authorize from '../middleware/Authorize';
 import RolesCtrl from '../controllers/Roles';
 
 /**

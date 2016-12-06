@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import Base from './app/routes/base';
+import Base from './app/routes/Base';
 
 const app = express();
 const port = process.env.PORT || 3030;

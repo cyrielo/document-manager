@@ -158,8 +158,6 @@ describe('User', () => {
       });
   });
 
-  /**/
-
   it('should login', (done) => {
     requestHandler.post('/api/users/login')
       .set('Accept', 'application/json')

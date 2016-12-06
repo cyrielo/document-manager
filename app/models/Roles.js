@@ -1,4 +1,4 @@
-import Validator from './../helpers/validate';
+import Validator from '../helpers/Validate';
 
 /**
  * Roles models

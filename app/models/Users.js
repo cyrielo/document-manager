@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import Validator from './../helpers/validate';
+import Validator from '../helpers/Validate';
 import config from './../config/config';
 
 /**

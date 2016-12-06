@@ -1,4 +1,4 @@
-import Password from './../helpers/password';
+import Password from './Password';
 
 class Validate {
 

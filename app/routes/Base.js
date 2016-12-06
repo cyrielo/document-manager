@@ -2,9 +2,9 @@
  * Created by cyrielo on 11/10/16.
  */
 import express from 'express';
-import User from './user';
+import User from './User';
 import Document from './Document';
-import Role from './role';
+import Role from './Role';
 
 class Base {
   constructor() {

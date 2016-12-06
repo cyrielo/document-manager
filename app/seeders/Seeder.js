@@ -1,4 +1,4 @@
-import Password from './../helpers/password';
+import Password from '../helpers/Password';
 import models from '../models/index';
 
 class Seeder {
