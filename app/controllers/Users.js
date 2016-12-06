@@ -57,12 +57,12 @@ class Users {
           data: user,
         });
       })
-      .catch((error) => {
-        res.status(422).json({
-          status: 'fail',
-          message: 'Unable to create user account!',
-          data: error,
-        });
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode)
+          .json({
+            status: 'fail',
+            message: errorDetails.message,
+          });
       });
   }
 

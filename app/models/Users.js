@@ -39,11 +39,11 @@ const UserModel = (sequelize, DataTypes) => {
           const lastname = req.body.lastname;
           const email = req.body.email;
           const password = req.body.password;
-          const role = req.body.role;
+          let role = req.body.role;
 
           Users.userExists(email)
             .then(() => {
-              fail('User already exists!');
+              fail({ statusCode: 400, message: 'User already exists!' });
             })
             .catch(() => {
               const errors = [];
@@ -64,7 +64,7 @@ const UserModel = (sequelize, DataTypes) => {
               }
 
               if (validate.isEmpty(role)) {
-                errors.push('User must have a role assigned');
+                role = 'regular';
               }
 
               if (errors.length < 1) {
@@ -87,14 +87,14 @@ const UserModel = (sequelize, DataTypes) => {
                       });
                     })
                     .catch((error) => {
-                      fail(error);
+                      fail({ statusCode: 500, message: error });
                     });
                 })
                   .catch((error) => {
-                    fail(error);
+                    fail({ statusCode: 400, message: error });
                   });
               } else {
-                fail({ errors });
+                fail({ statusCode: 400, message: errors });
               }
             });
         });

@@ -57,10 +57,10 @@ describe('User', () => {
     requestHandler.post('/api/users')
       .set('Accept', 'application/json')
       .send(testUser)
-      .expect(417) // TODO change the http status code
+      .expect(400)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.data).to.equal('User already exists!');
+        expect(res.body.message).to.equal('User already exists!');
         done();
       });
   });
@@ -76,7 +76,7 @@ describe('User', () => {
       .expect(422)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message[0]).to.equal('Email is not valid');
         done();
       });
   });
@@ -94,7 +94,7 @@ describe('User', () => {
       .expect(422)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message).to.equal('Role does not exists');
         done();
       });
   });
@@ -112,7 +112,7 @@ describe('User', () => {
       .expect(422)
       .end((req, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message[0]).to.equal('Last name is required');
         done();
       });
   });
