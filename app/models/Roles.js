@@ -24,23 +24,24 @@ const RoleModel = (sequelize, DataTypes) => {
 
         return new Promise((fulfill, fail) => {
           if (!validate.isEmpty(title)) {
-            Roles.roleExists(title).then(() => {
-              fail({
-                statusCode: 403,
-                message: 'Role already exists',
-              });
-            })
-              .catch(() => {
-                Roles.create({
-                  title,
-                }).then((role) => {
-                  fulfill(role);
-                }).catch((error) => {
-                  fail({
-                    statusCode: 500,
-                    message: error,
-                  });
+            Roles.roleExists(title)
+              .then(() => {
+                fail({
+                  statusCode: 403,
+                  message: 'Role already exists',
                 });
+              })
+              .catch(() => {
+                Roles.create({ title })
+                  .then((role) => {
+                    fulfill(role);
+                  })
+                  .catch((error) => {
+                    fail({
+                      statusCode: 500,
+                      message: error,
+                    });
+                  });
               });
           } else {
             fail({
@@ -123,15 +124,9 @@ const RoleModel = (sequelize, DataTypes) => {
       */
       updateRole: (roleId, title) => {
         return new Promise((fulfill, fail) => {
-          Roles.find({
-            where: {
-              id: roleId,
-            },
-          })
+          Roles.find({ where: { id: roleId } })
             .then((role) => {
-              role.updateAttributes({
-                title,
-              })
+              role.updateAttributes({ title })
                 .then((newRole) => {
                   fulfill(newRole);
                 })

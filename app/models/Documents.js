@@ -283,15 +283,13 @@ const DocumentsModel = (sequelize, DataTypes) => {
           Documents.getDoc(ownerId, id)
             .then((doc) => {
               if (doc.ownerId === ownerId) {
-                doc.destroy({
-                  where: {
-                    id,
-                  },
-                }).then(() => {
-                  fulfill('Document deleted successfully');
-                }).catch((error) => {
-                  fail({ statusCode: 500, message: error });
-                });
+                doc.destroy({ where: { id } })
+                  .then(() => {
+                    fulfill('Document deleted successfully');
+                  })
+                  .catch((error) => {
+                    fail({ statusCode: 500, message: error });
+                  });
               } else {
                 fail({
                   statusCode: 403,

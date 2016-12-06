@@ -187,19 +187,21 @@ class Users {
       update.password = this.validate.hashPassword(password);
     }
 
-    this.models.Users.updateUser(uid, update, token).then((user) => {
-      res.status(200).json({
-        status: 'success',
-        message: 'User updated',
-        data: user,
+    this.models.Users.updateUser(uid, update, token)
+      .then((user) => {
+        res.status(200).json({
+          status: 'success',
+          message: 'User updated',
+          data: user,
+        });
+      })
+      .catch((error) => {
+        res.status(401).json({
+          status: 'fail',
+          message: 'Update failed',
+          data: error,
+        });
       });
-    }).catch((error) => {
-      res.status(401).json({
-        status: 'fail',
-        message: 'Update failed',
-        data: error,
-      });
-    });
   }
 
   /**
@@ -212,19 +214,21 @@ class Users {
   deleteUser(req, res) {
     const uid = req.params.id;
     const token = req.headers.authorization;
-    this.models.Users.deleteUser(uid, token).then((info) => {
-      res.status(200).json({
-        status: 'success',
-        message: 'Operation successful',
-        data: info,
+    this.models.Users.deleteUser(uid, token)
+      .then((info) => {
+        res.status(200).json({
+          status: 'success',
+          message: 'Operation successful',
+          data: info,
+        });
+      })
+      .catch((error) => {
+        res.status(403).json({
+          status: 'fail',
+          message: 'Operation failed',
+          data: error,
+        });
       });
-    }).catch((error) => {
-      res.status(403).json({
-        status: 'fail',
-        message: 'Operation failed',
-        data: error,
-      });
-    });
   }
 
   /**
@@ -237,18 +241,20 @@ class Users {
   getUserDocs(req, res) {
     const uid = req.params.id;
     const token = req.headers.authorization;
-    this.models.Users.getUserDocs(uid, token).then((data) => {
-      res.status(200).json({
-        status: 'success',
-        message: 'Document listed',
-        data,
+    this.models.Users.getUserDocs(uid, token)
+      .then((data) => {
+        res.status(200).json({
+          status: 'success',
+          message: 'Document listed',
+          data,
+        });
+      })
+      .catch((errorDetails) => {
+        res.status(errorDetails.statusCode).json({
+          status: 'fail',
+          message: errorDetails.message,
+        });
       });
-    }).catch((errorDetails) => {
-      res.status(errorDetails.statusCode).json({
-        status: 'fail',
-        message: errorDetails.message,
-      });
-    });
   }
 }
 
