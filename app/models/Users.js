@@ -2,6 +2,10 @@ import jwt from 'jsonwebtoken';
 import Validator from './../helpers/validate';
 import config from './../config/config';
 
+/**
+ * User model
+ * @class Users
+ */
 const UserModel = (sequelize, DataTypes) => {
   const Users = sequelize.define('Users', {
     firstname: DataTypes.STRING,
@@ -22,6 +26,12 @@ const UserModel = (sequelize, DataTypes) => {
 
       },
 
+      /**
+       * Register a new user
+       * @method register
+       * @param {Object} req
+       * @return Promise
+       */
       register: (req) => {
         return new Promise((fulfil, fail) => {
           const validate = new Validator();
@@ -90,6 +100,12 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       *Logs a user into the system
+       * @method login
+       * @param req
+       * @return Promise
+      */
       login: (req) => {
         return new Promise((fulfill, fail) => {
           const validate = new Validator();
@@ -151,17 +167,29 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieves all users in the system
+       * @method getUsers
+       * @return Promise
+      */
       getUsers: () => {
         return new Promise((fulfill, fail) => {
           Users.findAll()
             .then((allUsers) => {
               fulfill(allUsers);
-            }).catch((error) => {
-            fail(error);
-          });
+            })
+            .catch((error) => {
+              fail(error);
+            });
         });
       },
 
+      /**
+       * Asserts if a user exists in the database
+       * @method userExists
+       * @param {String} email
+       * @return Promise
+       */
       userExists: (email) => {
         return new Promise((fulfill, fail) => {
           Users.find({
@@ -182,6 +210,12 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieve a specific user information by user id
+       * @method getUser
+       * @param {String, int} id
+       * @return Promise
+       */
       getUser: (id) => {
         return new Promise((fulfill, fail) => {
           Users.find({
@@ -202,6 +236,11 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieves a user details by the user's email
+       * @method getUserByEmail
+       * @return Promise
+      */
       getUserByEmail: (email) => {
         return new Promise((fulfill, fail) => {
           Users.find({
@@ -222,6 +261,11 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Updates user details by user id
+       * @method updateUser
+       * @return Promise
+      */
       updateUser: (id, update, token) => {
         return new Promise((fulfill, fail) => {
           Users.find({
@@ -250,6 +294,11 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Delete a user entry from the database
+       * @method deleteUser
+       * @return Promise
+      */
       deleteUser: (id, token) => {
         const decoded = jwt.verify(token, config.secret);
 
@@ -282,6 +331,13 @@ const UserModel = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieves documents created by a user
+       * @method getUserDocs
+       * @param {String, int} uid
+       * @param {String} token
+       * @retun Promise
+       */
       getUserDocs: (uid, token) => {
         const decoded = jwt.verify(token, config.secret);
 
