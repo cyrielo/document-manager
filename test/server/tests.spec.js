@@ -142,7 +142,7 @@ describe('User', () => {
   it('should return all users requested by admin', (done) => {
     requestHandler.get('/api/users')
       .set('authorization', token)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         expect(res.body.message).to.equal('Access denied! You don\'t have admin rights!');
         requestHandler.get('/api/users')
@@ -181,7 +181,7 @@ describe('User', () => {
         email: 'non-existent-user@gmail.com',
         password: '654321',
       })
-      .expect(403)
+      .expect(401)
       .end((err, res) => {
         expect(res.body.message).to.be.equal('Invalid email and password combination');
         done();
@@ -250,7 +250,7 @@ describe('User', () => {
     requestHandler.put('/api/users/3')
       .set('Accept', 'application/json')
       .set('authorization', adminToken)
-      .expect(401)
+      .expect(403)
       .send({
         lastname: 'wozniak',
       })
@@ -279,7 +279,7 @@ describe('Role', () => {
           .set('Accept', 'application/json')
           .set('authorization', token)
           .send({ title: 'gibberish' })
-          .expect(401)
+          .expect(403)
           .end((err2, res2) => {
             expect(res2.body.status).to.be.equal('fail');
             expect(res2.body.message).to.be.equal('Access denied! You don\'t have admin rights!');
@@ -324,7 +324,7 @@ describe('Role', () => {
   it('should not return all roles if not admin', (done) => {
     requestHandler.get('/api/roles')
       .set('authorization', token)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         expect(res.body.status).to.be.equal('fail');
         expect(res.body.message).to.be.equal('Access denied! You don\'t have admin rights!');
@@ -476,6 +476,7 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Documents listed');
+        expect(res.body.data.length).to.be.equal(6);
         done();
       });
   });
@@ -577,21 +578,19 @@ describe('Document', () => {
   });
 
   it('should not create document with invalid access', () => {
-    it('should be able to create document', (done) => {
-      requestHandler.post('/api/documents/')
-        .set('Accept', 'application/json')
-        .set('authorization', adminToken)
-        .send({
-          title: 'A newer document',
-          content: 'This document has invalid access',
-          access: 'asdf',
-        })
-        .expect(403)
-        .end((err, res) => {
-          expect(res.body.status).to.be.equal('fail');
-          done();
-        });
-    });
+    requestHandler.post('/api/documents/')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .send({
+        title: 'A newer document',
+        content: 'This document has invalid access',
+        access: 'asdf',
+      })
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        done();
+      });
   });
 
   it('should not create document that already exists', (done) => {
@@ -641,6 +640,18 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('fail');
         expect(res.body.message).to.be.equal('Document does not exists');
+        done();
+      });
+  });
+
+  it('should not view document not created by user', (done) => {
+    requestHandler.get('/api/documents/1')
+      .set('Accept', 'application/json')
+      .set('authorization', token)
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('You do not have permissions to view this document');
         done();
       });
   });
