@@ -21,7 +21,7 @@ class Authorize {
       if (verifyToken.role === 'admin') {
         next();
       } else {
-        res.status(401).json({
+        res.status(403).json({
           status: 'fail',
           message: 'Access denied! You don\'t have admin rights!',
         });
