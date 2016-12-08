@@ -1,24 +1,32 @@
 import jwt from 'jsonwebtoken';
 import config from './../config/config';
-import models from './../models/index';
-import Validator from './../helpers/validate';
+import models from './../models';
+import Validator from '../helpers/Validate';
 
+/**
+ * Document controller class
+ * @class Document
+*/
 class Document {
 
+  /**
+   * Constructor
+   * @method constructor
+   */
   constructor() {
     this.validate = new Validator();
   }
 
-  /*
+  /**
   * Creates a new document entry in the database
   * @method createDoc
   * @param {Object} req
   * @param {Object} res Object
   * @return undefined
-  * */
+  */
   createDoc(req, res) {
-    const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
-    models.documents.createDoc(req, verifyToken.id, verifyToken.role)
+    const verifyToken = jwt.verify(req.headers.authorization, config.secret);
+    models.Documents.createDoc(req, verifyToken.id, verifyToken.role)
       .then((document) => {
         res.status(201).json({
           status: 'success',
@@ -38,16 +46,16 @@ class Document {
   * Retrieves documents from the database
   * @param {Object} req
   * @param {Object} res
-  * */
+  */
   all(req, res) {
     const limit = req.query.limit;
     const offset = req.query.offset;
     const byRole = req.query.role;
     const byAccess = req.query.access;
     const byDate = req.query.date;
-    const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
+    const verifyToken = jwt.verify(req.headers.authorization, config.secret);
 
-    models.documents.all(limit, offset, byRole, byAccess, byDate, verifyToken.id, verifyToken.role)
+    models.Documents.all(limit, offset, byRole, byAccess, byDate, verifyToken.id, verifyToken.role)
       .then((docs) => {
         res.status(200).json({
           status: 'success',
@@ -66,11 +74,11 @@ class Document {
   * Retrieves a specific document from the database
   * @param {Object} req
   * @param {Object} res
-  * */
+  */
   getDoc(req, res) {
     const docId = req.params.id;
-    const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
-    models.documents.getDoc(verifyToken.id, docId)
+    const verifyToken = jwt.verify(req.headers.authorization, config.secret);
+    models.Documents.getDoc(verifyToken.id, docId)
       .then((document) => {
         res.status(200).json({
           status: 'success',
@@ -89,9 +97,9 @@ class Document {
    * Update the database with new info
    * @param {Object} req
    * @param {Object} res
-   * */
+   */
   updateDoc(req, res) {
-    const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
+    const verifyToken = jwt.verify(req.headers.authorization, config.secret);
     const docId = req.params.id;
     const title = req.body.title;
     const content = req.body.content;
@@ -119,7 +127,7 @@ class Document {
     }
 
     if (errors.length < 1) {
-      models.documents.update(docId, verifyToken.id, update)
+      models.Documents.update(docId, verifyToken.id, update)
         .then((document) => {
           res.status(201).json({
             status: 'success',
@@ -146,12 +154,12 @@ class Document {
    * Deletes a specific document from the database
    * @param {Object} req
    * @param {Object} res
-   * */
+   */
   deleteDoc(req, res) {
-    const verifyToken = jwt.verify(req.headers.authorization, config.secrete);
+    const verifyToken = jwt.verify(req.headers.authorization, config.secret);
     const docId = req.params.id;
 
-    models.documents.deleteDoc(docId, verifyToken.id)
+    models.Documents.deleteDoc(docId, verifyToken.id)
       .then(() => {
         res.status(200).json({
           status: 'success',

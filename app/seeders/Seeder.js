@@ -1,12 +1,25 @@
-import Password from './../helpers/password';
+import Password from '../helpers/Password';
 import models from '../models/index';
 
+/**
+ * Seeder class to populate database with default data
+ * @class Seeder
+ */
 class Seeder {
+  /**
+   * Creates new instance of password helper
+   * and setup models for use in class
+   * @method constructor
+   */
   constructor() {
     this.models = models;
     this.pass = new Password();
   }
 
+  /**
+   * Perform the populating sequentially
+   * @method init
+   */
   init() {
     this.models.sequelize.sync({ logging: false })
       .then(() => {
@@ -29,6 +42,11 @@ class Seeder {
       });
   }
 
+  /**
+   * Populates database with user data
+   * @method setUpUsers
+   * @return Promise
+   */
   setUpUsers() {
     const users = [{
       firstname: 'Kate',
@@ -52,9 +70,14 @@ class Seeder {
         role: 'regular',
       },
     ];
-    return this.models.users.bulkCreate(users);
+    return this.models.Users.bulkCreate(users);
   }
 
+  /**
+   * Populates database with default roles
+   * @method setupRoles
+   * @return Promise
+   */
   setUpRoles() {
     const roles = [{
       title: 'admin',
@@ -63,9 +86,14 @@ class Seeder {
         title: 'regular',
       },
     ];
-    return this.models.roles.bulkCreate(roles);
+    return this.models.Roles.bulkCreate(roles);
   }
 
+  /**
+   * Populates database with default documents
+   * @method setUpDocuments
+   * @return Promise
+   */
   setUpDocuments() {
     const docs = [
       {
@@ -107,7 +135,7 @@ class Seeder {
         role: 'admin',
       },
     ];
-    return this.models.documents.bulkCreate(docs);
+    return this.models.Documents.bulkCreate(docs);
   }
 }
 

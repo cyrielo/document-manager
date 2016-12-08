@@ -1,12 +1,21 @@
 import express from 'express';
-import Authenticate from './../middleware/authenticate';
-import Authorize from './../middleware/authorize';
-import RolesCtrl from './../controllers/roles';
+import Authenticate from '../middleware/Authenticate';
+import Authorize from '../middleware/Authorize';
+import RolesCtrl from '../controllers/Roles';
 
+/**
+ * Roles route class, for handling request to the routes
+ * @class Roles
+*/
 class Roles {
+  /**
+   * Creates an instance of the Route controller
+   * Setup Middleware methods
+   * @method constructor
+  */
   constructor() {
-    this.authenticate = Authenticate;
-    this.authorize = Authorize;
+    this.authenticate = Authenticate.route;
+    this.authorize = Authorize.route;
     this.router = express.Router();
     this.rolesCtrl = new RolesCtrl();
 
@@ -14,10 +23,20 @@ class Roles {
     this.baseRouteParam();
   }
 
+  /**
+   * Returns a router to be expose other routes created
+   * @method route
+   * @return Router
+  */
   route() {
     return this.router;
   }
 
+  /**
+   * Handle request made to the role root route
+   * @method baseRoute
+   * @return undefined
+   */
   baseRoute() {
     this.router.route('/')
       .get(this.authenticate, this.authorize, (req, res) => {
@@ -28,6 +47,11 @@ class Roles {
       });
   }
 
+  /**
+   * Handles request with query string parameters
+   * @method baseRouteParam
+   * @return undefined
+  */
   baseRouteParam() {
     this.router.route('/:id')
       .get(this.authenticate, (req, res) => {

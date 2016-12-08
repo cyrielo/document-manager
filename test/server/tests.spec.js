@@ -13,7 +13,6 @@ const testUser = {
   lastname: 'Trump',
   email: 'alice@gmail.com',
   password: '123456',
-  role: 'regular',
 };
 
 const adminUser =
@@ -57,10 +56,10 @@ describe('User', () => {
     requestHandler.post('/api/users')
       .set('Accept', 'application/json')
       .send(testUser)
-      .expect(417) // TODO change the http status code
+      .expect(400)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.data).to.equal('User already exists!');
+        expect(res.body.message).to.equal('User already exists!');
         done();
       });
   });
@@ -76,7 +75,7 @@ describe('User', () => {
       .expect(422)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message[0]).to.equal('Email is not valid');
         done();
       });
   });
@@ -94,7 +93,7 @@ describe('User', () => {
       .expect(422)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message).to.equal('Role does not exists');
         done();
       });
   });
@@ -112,7 +111,7 @@ describe('User', () => {
       .expect(422)
       .end((req, res) => {
         expect(res.body.status).to.equal('fail');
-        expect(res.body.message).to.equal('Unable to create user account!');
+        expect(res.body.message[0]).to.equal('Last name is required');
         done();
       });
   });
@@ -123,7 +122,7 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(res.body.data.role).to.not.be.undefined;
+        expect(typeof res.body.data.role).to.not.equal('undefined');
         done();
       });
   });
@@ -134,8 +133,8 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(res.body.data.firstname).to.not.be.undefined;
-        expect(res.body.data.lastname).to.not.be.undefined;
+        expect(res.body.data.firstname).to.not.equal('undefined');
+        expect(res.body.data.lastname).to.not.equal('undefined');
         done();
       });
   });
@@ -143,7 +142,7 @@ describe('User', () => {
   it('should return all users requested by admin', (done) => {
     requestHandler.get('/api/users')
       .set('authorization', token)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         expect(res.body.message).to.equal('Access denied! You don\'t have admin rights!');
         requestHandler.get('/api/users')
@@ -152,13 +151,11 @@ describe('User', () => {
           .end((err2, res2) => {
             expect(res2.body.status).to.equal('success');
             expect(res2.body.message).to.equal('Users listed!');
-            expect(typeof res.body.data).to.not.be.undefined;
+            expect(typeof res2.body.data).to.not.equal('undefined');
           });
         done();
       });
   });
-
-  /**/
 
   it('should login', (done) => {
     requestHandler.post('/api/users/login')
@@ -171,7 +168,7 @@ describe('User', () => {
       .end((err, res) => {
         expect(res.body.status).to.equal('success');
         expect(res.body.message).to.equal('Successful login');
-        expect(typeof res.body.data.user).to.not.be.undefined;
+        expect(typeof res.body.data.user).to.not.equal('undefined');
         token = res.body.data.token;
         done();
       });
@@ -184,7 +181,7 @@ describe('User', () => {
         email: 'non-existent-user@gmail.com',
         password: '654321',
       })
-      .expect(403)
+      .expect(401)
       .end((err, res) => {
         expect(res.body.message).to.be.equal('Invalid email and password combination');
         done();
@@ -196,9 +193,9 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(typeof res.body.data.firstname).to.not.be.undefined;
-        expect(typeof res.body.data.lastname).to.not.be.undefined;
-        expect(typeof res.body.data.email).to.not.be.undefined;
+        expect(typeof res.body.data.firstname).to.not.equal('undefined');
+        expect(typeof res.body.data.lastname).to.not.equal('undefined');
+        expect(typeof res.body.data.email).to.not.equal('undefined');
         done();
       });
   });
@@ -253,7 +250,7 @@ describe('User', () => {
     requestHandler.put('/api/users/3')
       .set('Accept', 'application/json')
       .set('authorization', adminToken)
-      .expect(401)
+      .expect(403)
       .send({
         lastname: 'wozniak',
       })
@@ -282,7 +279,7 @@ describe('Role', () => {
           .set('Accept', 'application/json')
           .set('authorization', token)
           .send({ title: 'gibberish' })
-          .expect(401)
+          .expect(403)
           .end((err2, res2) => {
             expect(res2.body.status).to.be.equal('fail');
             expect(res2.body.message).to.be.equal('Access denied! You don\'t have admin rights!');
@@ -327,7 +324,7 @@ describe('Role', () => {
   it('should not return all roles if not admin', (done) => {
     requestHandler.get('/api/roles')
       .set('authorization', token)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         expect(res.body.status).to.be.equal('fail');
         expect(res.body.message).to.be.equal('Access denied! You don\'t have admin rights!');
@@ -429,7 +426,7 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Document listed');
-        expect(res.body.data).to.not.be.undefined;
+        expect(typeof res.body.data).to.be.equal('object');
         done();
       });
   });
@@ -469,7 +466,7 @@ describe('Document', () => {
   });
 
   it('should ensure document created has published date defined', () => {
-    expect(typeof documentCreated.createdAt).to.not.be.undefined;
+    expect(typeof documentCreated.createdAt).to.not.equal('undefined');
   });
 
   it('should get all documents', (done) => {
@@ -479,6 +476,7 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Documents listed');
+        expect(res.body.data.length).to.be.equal(6);
         done();
       });
   });
@@ -580,21 +578,19 @@ describe('Document', () => {
   });
 
   it('should not create document with invalid access', () => {
-    it('should be able to create document', (done) => {
-      requestHandler.post('/api/documents/')
-        .set('Accept', 'application/json')
-        .set('authorization', adminToken)
-        .send({
-          title: 'A newer document',
-          content: 'This document has invalid access',
-          access: 'asdf',
-        })
-        .expect(403)
-        .end((err, res) => {
-          expect(res.body.status).to.be.equal('fail');
-          done();
-        });
-    });
+    requestHandler.post('/api/documents/')
+      .set('Accept', 'application/json')
+      .set('authorization', adminToken)
+      .send({
+        title: 'A newer document',
+        content: 'This document has invalid access',
+        access: 'asdf',
+      })
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        done();
+      });
   });
 
   it('should not create document that already exists', (done) => {
@@ -644,6 +640,18 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('fail');
         expect(res.body.message).to.be.equal('Document does not exists');
+        done();
+      });
+  });
+
+  it('should not view document not created by user', (done) => {
+    requestHandler.get('/api/documents/1')
+      .set('Accept', 'application/json')
+      .set('authorization', token)
+      .expect(403)
+      .end((err, res) => {
+        expect(res.body.status).to.be.equal('fail');
+        expect(res.body.message).to.be.equal('You do not have permissions to view this document');
         done();
       });
   });

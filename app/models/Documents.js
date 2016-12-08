@@ -1,7 +1,11 @@
-import Validator from './../helpers/validate';
+import Validator from '../helpers/Validate';
 
-module.exports = (sequelize, DataTypes) => {
-  const documents = sequelize.define('documents', {
+/**
+ * Document model
+ * @class Document
+ */
+const DocumentsModel = (sequelize, DataTypes) => {
+  const Documents = sequelize.define('Documents', {
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     access: DataTypes.STRING,
@@ -11,9 +15,16 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
-        // TODO fix document relationship issues
       },
 
+      /**
+       * Creates a new document entry in the database
+       * @method createDoc
+       * @param {Object} req
+       * @param {String, int} ownerId
+       * @param {String} role
+       * @return Promise
+       */
       createDoc: (req, ownerId, role) => {
 
         return new Promise((fulfill, fail) => {
@@ -40,22 +51,18 @@ module.exports = (sequelize, DataTypes) => {
           }
 
           if (errors.length < 1) {
-            documents.documentExists(title).then(() => {
-              fail({
-                statusCode: 403,
-                message: 'Document already exists',
-              });
-            })
-              .catch(() => {
-                documents.create({
-                  title,
-                  content,
-                  ownerId,
-                  access,
-                  role,
-                }).then((newDoc) => {
-                  fulfill(newDoc);
+            Documents.documentExists(title)
+              .then(() => {
+                fail({
+                  statusCode: 403,
+                  message: 'Document already exists',
                 });
+              })
+              .catch(() => {
+                Documents.create({ title, content, ownerId, access, role })
+                  .then((newDoc) => {
+                    fulfill(newDoc);
+                  });
               });
           } else {
             fail({ statusCode: 403, message: errors });
@@ -63,46 +70,52 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieve a specific document from the database
+       * @method getDoc
+       * @param {String, int} uid user id
+       * @param {String, int} id document id
+       * @return Promise
+       */
       getDoc: (uid, id) => {
         return new Promise((fulfill, fail) => {
-          documents.findOne({
-            where: {
-              id,
-            },
-          }).then((document) => {
-            if (document) {
-              if (document.ownerId === uid) {
-                fulfill(document);
-              } else if (document.access === 'public') {
-                fulfill(document);
+          Documents.findOne({ where: { id } })
+            .then((document) => {
+              if (document) {
+                if (document.ownerId === uid) {
+                  fulfill(document);
+                } else if (document.access === 'public') {
+                  fulfill(document);
+                } else {
+                  fail({
+                    statusCode: 403,
+                    message: 'You do not have permissions to view this document',
+                  });
+                }
               } else {
                 fail({
-                  statusCode: 403,
-                  message: 'You do not have permissions to view this document',
+                  statusCode: 404,
+                  message: 'Document does not exists',
                 });
               }
-            } else {
+            })
+            .catch((error) => {
               fail({
-                statusCode: 404,
-                message: 'Document does not exists',
+                statusCode: 500,
+                message: error,
               });
-            }
-          }).catch((error) => {
-            fail({
-              statusCode: 500,
-              message: error,
             });
-          });
         });
       },
 
+      /**
+       * Asserts if a document exists in the database
+       * @param {String} docTitle
+       * @return Promise
+       */
       documentExists: (docTitle) => {
         return new Promise((fulfill, fail) => {
-          documents.find({
-            where: {
-              title: docTitle,
-            },
-          })
+          Documents.find({ where: { title: docTitle } })
             .then((doc) => {
               if (doc) {
                 fulfill(doc);
@@ -116,6 +129,18 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Retrieves all document from the database based on different criteria
+       * @method all
+       * @param {String, int} limit
+       * @param {String, int} offset
+       * @param {String} byRole
+       * @param {String} byAccess
+       * @param {String} byDate
+       * @param {String, int} uid
+       * @param {String} role
+       * @return Promise
+       */
       all: (limit, offset, byRole, byAccess, byDate, uid, role) => {
         return new Promise((fulfill, fail) => {
           const modifiers = { order: [['createdAt', 'DESC']] };
@@ -158,12 +183,12 @@ module.exports = (sequelize, DataTypes) => {
             };
           }
 
-          documents.findAll(modifiers)
+          Documents.findAll(modifiers)
             .then((docs) => {
               if (byAccess || byRole) {
                 fulfill(docs);
               } else {
-                fulfill(documents.filterDocs(docs, uid, role));
+                fulfill(Documents.filterDocs(docs, uid, role));
               }
             })
             .catch((error) => {
@@ -172,9 +197,17 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Updates a document with new details
+       * @method update
+       * @param {String, int} id
+       * @param {String, int} ownerId
+       * @param {Object} update
+       * @return Promise
+      */
       update: (id, ownerId, update) => {
         return new Promise((fulfill, fail) => {
-          documents.getDoc(ownerId, id)
+          Documents.getDoc(ownerId, id)
             .then((doc) => {
               if (doc.ownerId === ownerId) {
                 doc.updateAttributes(update)
@@ -200,6 +233,14 @@ module.exports = (sequelize, DataTypes) => {
         });
       },
 
+      /**
+       * Filters document to contorl visibility based on document
+       * @method filterDocs
+       * @param {Array} docs
+       * @param {String, int} uid
+       * @param {String} userRole
+       * @return Array
+       */
       filterDocs: (docs, uid, userRole) => {
         let doc;
         let docValue;
@@ -220,20 +261,25 @@ module.exports = (sequelize, DataTypes) => {
         return filteredDoc;
       },
 
+      /**
+       * Removes a document entry
+       * @method deleteDoc
+       * @param {String, int} id
+       * @param {String, int} ownerId
+       * @return Promise
+      */
       deleteDoc: (id, ownerId) => {
         return new Promise((fulfill, fail) => {
-          documents.getDoc(ownerId, id)
+          Documents.getDoc(ownerId, id)
             .then((doc) => {
               if (doc.ownerId === ownerId) {
-                doc.destroy({
-                  where: {
-                    id,
-                  },
-                }).then(() => {
-                  fulfill('Document deleted successfully');
-                }).catch((error) => {
-                  fail({ statusCode: 500, message: error });
-                });
+                doc.destroy({ where: { id } })
+                  .then(() => {
+                    fulfill('Document deleted successfully');
+                  })
+                  .catch((error) => {
+                    fail({ statusCode: 500, message: error });
+                  });
               } else {
                 fail({
                   statusCode: 403,
@@ -248,5 +294,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-  return documents;
+  return Documents;
 };
+
+export default DocumentsModel;
