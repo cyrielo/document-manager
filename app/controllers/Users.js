@@ -25,13 +25,14 @@ class Users {
    * @return undefined
   */
   login(req, res) {
-    this.models.Users.login(req).then((user) => {
-      res.status(200).json({
-        status: 'success',
-        message: 'Successful login',
-        data: user,
-      });
-    })
+    this.models.Users.login(req)
+      .then((user) => {
+        res.status(200).json({
+          status: 'success',
+          message: 'Successful login',
+          data: user,
+        });
+      })
       .catch((errorDetails) => {
         res.status(errorDetails.statusCode).json({
           status: 'fail',

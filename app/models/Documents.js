@@ -51,22 +51,18 @@ const DocumentsModel = (sequelize, DataTypes) => {
           }
 
           if (errors.length < 1) {
-            Documents.documentExists(title).then(() => {
-              fail({
-                statusCode: 403,
-                message: 'Document already exists',
-              });
-            })
-              .catch(() => {
-                Documents.create({
-                  title,
-                  content,
-                  ownerId,
-                  access,
-                  role,
-                }).then((newDoc) => {
-                  fulfill(newDoc);
+            Documents.documentExists(title)
+              .then(() => {
+                fail({
+                  statusCode: 403,
+                  message: 'Document already exists',
                 });
+              })
+              .catch(() => {
+                Documents.create({ title, content, ownerId, access, role })
+                  .then((newDoc) => {
+                    fulfill(newDoc);
+                  });
               });
           } else {
             fail({ statusCode: 403, message: errors });
@@ -83,34 +79,32 @@ const DocumentsModel = (sequelize, DataTypes) => {
        */
       getDoc: (uid, id) => {
         return new Promise((fulfill, fail) => {
-          Documents.findOne({
-            where: {
-              id,
-            },
-          }).then((document) => {
-            if (document) {
-              if (document.ownerId === uid) {
-                fulfill(document);
-              } else if (document.access === 'public') {
-                fulfill(document);
+          Documents.findOne({ where: { id } })
+            .then((document) => {
+              if (document) {
+                if (document.ownerId === uid) {
+                  fulfill(document);
+                } else if (document.access === 'public') {
+                  fulfill(document);
+                } else {
+                  fail({
+                    statusCode: 403,
+                    message: 'You do not have permissions to view this document',
+                  });
+                }
               } else {
                 fail({
-                  statusCode: 403,
-                  message: 'You do not have permissions to view this document',
+                  statusCode: 404,
+                  message: 'Document does not exists',
                 });
               }
-            } else {
+            })
+            .catch((error) => {
               fail({
-                statusCode: 404,
-                message: 'Document does not exists',
+                statusCode: 500,
+                message: error,
               });
-            }
-          }).catch((error) => {
-            fail({
-              statusCode: 500,
-              message: error,
             });
-          });
         });
       },
 
@@ -121,11 +115,7 @@ const DocumentsModel = (sequelize, DataTypes) => {
        */
       documentExists: (docTitle) => {
         return new Promise((fulfill, fail) => {
-          Documents.find({
-            where: {
-              title: docTitle,
-            },
-          })
+          Documents.find({ where: { title: docTitle } })
             .then((doc) => {
               if (doc) {
                 fulfill(doc);

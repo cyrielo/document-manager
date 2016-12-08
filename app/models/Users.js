@@ -123,11 +123,7 @@ const UserModel = (sequelize, DataTypes) => {
           }
 
           if (errors.length < 1) {
-            Users.find({
-              where: {
-                email,
-              },
-            })
+            Users.find({ where: { email } })
               .then((user) => {
                 if (user) {
                   const passwordHash = user.dataValues.password;
@@ -152,12 +148,12 @@ const UserModel = (sequelize, DataTypes) => {
                   });
                 }
               })
-              .catch((error) => {
-                fail({
-                  statusCode: 500,
-                  message: error,
-                });
+            .catch((error) => {
+              fail({
+                statusCode: 500,
+                message: error,
               });
+            });
           } else {
             fail({
               statusCode: 403,
@@ -192,11 +188,7 @@ const UserModel = (sequelize, DataTypes) => {
        */
       userExists: (email) => {
         return new Promise((fulfill, fail) => {
-          Users.find({
-            where: {
-              email,
-            },
-          })
+          Users.find({ where: { email } })
             .then((user) => {
               if (user) {
                 fulfill(user);
@@ -223,16 +215,16 @@ const UserModel = (sequelize, DataTypes) => {
               id,
             },
           })
-            .then((user) => {
-              if (user) {
-                fulfill(user.dataValues);
-              }
+          .then((user) => {
+            if (user) {
+              fulfill(user.dataValues);
+            }
 
-              fail('User does not exists');
-            })
-            .catch((error) => {
-              fail(error);
-            });
+            fail('User does not exists');
+          })
+          .catch((error) => {
+            fail(error);
+          });
         });
       },
 
@@ -248,16 +240,16 @@ const UserModel = (sequelize, DataTypes) => {
               email,
             },
           })
-            .then((user) => {
-              if (user) {
-                fulfill(user.dataValues);
-              }
+          .then((user) => {
+            if (user) {
+              fulfill(user.dataValues);
+            }
 
-              fail('User does not exists');
-            })
-            .catch((error) => {
-              fail(error);
-            });
+            fail('User does not exists');
+          })
+          .catch((error) => {
+            fail(error);
+          });
         });
       },
 
@@ -273,24 +265,23 @@ const UserModel = (sequelize, DataTypes) => {
               id,
             },
           })
-            .then((user) => {
-              if (user) {
-                const verifyToken = jwt.verify(token, config.secret);
-                const usermail = verifyToken.email;
-                const dbemail = user.dataValues.email;
-
-                if (usermail === dbemail) {
-                  user.updateAttributes(update).then((newUserInfo) => {
-                    const jwtToken = jwt.sign(user.dataValues, config.secret, {
-                      expiresIn: '24hr',
-                    });
-                    fulfill({ user: newUserInfo, token: jwtToken });
+          .then((user) => {
+            if (user) {
+              const verifyToken = jwt.verify(token, config.secret);
+              const usermail = verifyToken.email;
+              const dbemail = user.dataValues.email;
+              if (usermail === dbemail) {
+                user.updateAttributes(update).then((newUserInfo) => {
+                  const jwtToken = jwt.sign(user.dataValues, config.secret, {
+                    expiresIn: '24hr',
                   });
-                } else {
-                  fail("You don't have permissions to update this user account");
-                }
+                  fulfill({ user: newUserInfo, token: jwtToken });
+                });
+              } else {
+                fail("You don't have permissions to update this user account");
               }
-            });
+            }
+          });
         });
       },
 
@@ -308,24 +299,22 @@ const UserModel = (sequelize, DataTypes) => {
               id,
             },
           })
-            .then((user) => {
-              if (user) {
-                const useremail = decoded.email;
-                if (useremail === user.dataValues.email) {
-                  Users.destroy({
-                    where: {
-                      id,
-                    },
-                  }).then(() => {
+          .then((user) => {
+            if (user) {
+              const useremail = decoded.email;
+              if (useremail === user.dataValues.email) {
+                Users.destroy({ where: { id } })
+                  .then(() => {
                     fulfill('User deleted');
                   });
-                } else {
-                  fail('You don\'t have permission to delete this account');
-                }
               } else {
-                fail('Account does not exists');
+                fail('You don\'t have permission to delete this account');
               }
-            }).catch((error) => {
+            } else {
+              fail('Account does not exists');
+            }
+          })
+          .catch((error) => {
             fail(error);
           });
         });
@@ -348,22 +337,22 @@ const UserModel = (sequelize, DataTypes) => {
                 ownerId: uid,
               },
             })
-              .then((doc) => {
-                if (doc) {
-                  fulfill(doc.dataValues);
-                } else {
-                  fail({
-                    statusCode: 404,
-                    message: 'Document does not exists!',
-                  });
-                }
-              })
-              .catch((error) => {
+            .then((doc) => {
+              if (doc) {
+                fulfill(doc.dataValues);
+              } else {
                 fail({
-                  statusCode: 500,
-                  message: error,
+                  statusCode: 404,
+                  message: 'Document does not exists!',
                 });
+              }
+            })
+            .catch((error) => {
+              fail({
+                statusCode: 500,
+                message: error,
               });
+            });
           } else {
             fail({
               statusCode: 401,

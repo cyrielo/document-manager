@@ -147,26 +147,19 @@ const RoleModel = (sequelize, DataTypes) => {
       */
       deleteRole: (roleId) => {
         return new Promise((fulfill, fail) => {
-          Roles.find({
-            where: {
-              id: roleId,
-            },
-          })
+          Roles.find({ where: { id: roleId } })
             .then((role) => {
               if (role) {
-                role.destroy({
-                  where: {
-                    id: roleId,
-                  },
-                })
+                role.destroy({ where: { id: roleId } })
                   .then(() => {
                     fulfill('Role deleted');
-                  }).catch((error) => {
-                  fail({
-                    statusCode: 500,
-                    message: error,
+                  })
+                  .catch((error) => {
+                    fail({
+                      statusCode: 500,
+                      message: error,
+                    });
                   });
-                });
               } else {
                 fail({
                   statusCode: 404,
