@@ -122,7 +122,7 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(res.body.data.role).to.not.be.undefined;
+        expect(typeof res.body.data.role).to.not.equal('undefined');
         done();
       });
   });
@@ -133,8 +133,8 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(res.body.data.firstname).to.not.be.undefined;
-        expect(res.body.data.lastname).to.not.be.undefined;
+        expect(res.body.data.firstname).to.not.equal('undefined');
+        expect(res.body.data.lastname).to.not.equal('undefined');
         done();
       });
   });
@@ -151,7 +151,7 @@ describe('User', () => {
           .end((err2, res2) => {
             expect(res2.body.status).to.equal('success');
             expect(res2.body.message).to.equal('Users listed!');
-            expect(typeof res.body.data).to.not.be.undefined;
+            expect(typeof res2.body.data).to.not.equal('undefined');
           });
         done();
       });
@@ -168,7 +168,7 @@ describe('User', () => {
       .end((err, res) => {
         expect(res.body.status).to.equal('success');
         expect(res.body.message).to.equal('Successful login');
-        expect(typeof res.body.data.user).to.not.be.undefined;
+        expect(typeof res.body.data.user).to.not.equal('undefined');
         token = res.body.data.token;
         done();
       });
@@ -193,9 +193,9 @@ describe('User', () => {
       .set('authorization', token)
       .expect(200)
       .end((err, res) => {
-        expect(typeof res.body.data.firstname).to.not.be.undefined;
-        expect(typeof res.body.data.lastname).to.not.be.undefined;
-        expect(typeof res.body.data.email).to.not.be.undefined;
+        expect(typeof res.body.data.firstname).to.not.equal('undefined');
+        expect(typeof res.body.data.lastname).to.not.equal('undefined');
+        expect(typeof res.body.data.email).to.not.equal('undefined');
         done();
       });
   });
@@ -426,7 +426,7 @@ describe('Document', () => {
       .end((err, res) => {
         expect(res.body.status).to.be.equal('success');
         expect(res.body.message).to.be.equal('Document listed');
-        expect(res.body.data).to.not.be.undefined;
+        expect(typeof res.body.data).to.be.equal('object');
         done();
       });
   });
@@ -466,7 +466,7 @@ describe('Document', () => {
   });
 
   it('should ensure document created has published date defined', () => {
-    expect(typeof documentCreated.createdAt).to.not.be.undefined;
+    expect(typeof documentCreated.createdAt).to.not.equal('undefined');
   });
 
   it('should get all documents', (done) => {
