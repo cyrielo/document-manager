@@ -2,8 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from './../config/config';
 
 /**
- * Authorize middleware to intercept and check
- * if request is authorized
+ * Authorize middleware to intercept and check if request is authorized
  * @class Authorize
  */
 class Authorize {
