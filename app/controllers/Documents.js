@@ -22,7 +22,6 @@ class Document {
   * @method createDoc
   * @param {Object} req
   * @param {Object} res Object
-  * @return undefined
   */
   createDoc(req, res) {
     const verifyToken = jwt.verify(req.headers.authorization, config.secret);

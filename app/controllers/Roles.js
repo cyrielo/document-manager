@@ -18,7 +18,6 @@ class Roles {
    * @method createRole
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
   */
   createRole(req, res) {
     const roleTitle = req.body.title;

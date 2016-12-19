@@ -45,7 +45,7 @@ class Seeder {
   /**
    * Populates database with user data
    * @method setUpUsers
-   * @return Promise
+   * @return {Promise} promise object
    */
   setUpUsers() {
     const users = [{
@@ -76,7 +76,7 @@ class Seeder {
   /**
    * Populates database with default roles
    * @method setupRoles
-   * @return Promise
+   * @return {Promise} promise object
    */
   setUpRoles() {
     const roles = [{
@@ -92,7 +92,7 @@ class Seeder {
   /**
    * Populates database with default documents
    * @method setUpDocuments
-   * @return Promise
+   * @return {Promise} promise object
    */
   setUpDocuments() {
     const docs = [

@@ -2,6 +2,8 @@ import Validator from '../helpers/Validate';
 
 /**
  * Roles models
+ * @param {sequelize} sequelize object
+ * @param {Object} DataTypes object
  * @class Roles
  */
 const RoleModel = (sequelize, DataTypes) => {
@@ -17,7 +19,7 @@ const RoleModel = (sequelize, DataTypes) => {
        * Creates a new role entry
        * @method createRole
        * @param {String} title
-       * @return Promise
+       * @return {Promise} promise object
        */
       createRole: (title) => {
         const validate = new Validator();
@@ -55,8 +57,8 @@ const RoleModel = (sequelize, DataTypes) => {
       /**
        * Retrieves a specific role
        * @method getRole
-       * @param {String, int} id
-       * @return Promise
+       * @param {int} id
+       * @return {Promise} promise object
       */
       getRole: (id) => {
         return new Promise((fulfill, fail) => {
@@ -78,7 +80,7 @@ const RoleModel = (sequelize, DataTypes) => {
        * Asserts if a role exists
        * @method roleExists
        * @param {String} title
-       * @return Promise
+       * @return {Promise} promise object
        */
       roleExists: (title) => {
         return new Promise((fulfill, fail) => {
@@ -99,7 +101,7 @@ const RoleModel = (sequelize, DataTypes) => {
       /**
        * Retrieves all roles in the system
        * @method all
-       * @return Promise
+       * @return {Promise} promise object
        */
       all: () => {
         return new Promise((fulfill, fail) => {
@@ -119,8 +121,9 @@ const RoleModel = (sequelize, DataTypes) => {
       /**
        * Updates the a specific role with new details
        * @method updateRole
-       * @param {String, int} roleId
+       * @param {int} roleId
        * @param {String} title
+       * @return {Promise} promise object
       */
       updateRole: (roleId, title) => {
         return new Promise((fulfill, fail) => {
@@ -143,7 +146,8 @@ const RoleModel = (sequelize, DataTypes) => {
       /**
        * Delete a role from the database
        * @method deleteRole
-       * @param {String, int} roleId
+       * @param {int} roleId
+       * @return {Promise} promise object
       */
       deleteRole: (roleId) => {
         return new Promise((fulfill, fail) => {
