@@ -18,7 +18,6 @@ class Password {
    * @method compare
    * @param {String} passwordStr
    * @param {String} passwordHash
-   * @return Boolean
    */
   compare(passwordStr, passwordHash) {
     return this.bcrypt.compareSync(passwordStr, passwordHash);
@@ -28,7 +27,7 @@ class Password {
    * Generate a hash from a password string
    * @method generate
    * @param {String} passwordStr
-   * @return String
+   * @return {String} generated password
    */
   generate(passwordStr) {
     const salt = this.bcrypt.genSaltSync(10);

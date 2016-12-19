@@ -24,7 +24,7 @@ class Document {
   /**
    * Returns the express router for the document
    * @method route
-   * @return Router
+   * @return {Object} Router object
   */
   route() {
     return this.router;
@@ -33,7 +33,6 @@ class Document {
   /**
    * Calls the controller for processing request made to the document root
    * @method documentBaseRoute
-   * @return undefined
    */
   documentBaseRoute() {
     this.router.route('/')
@@ -48,7 +47,6 @@ class Document {
    * Calls the controller for processing request made to the document with
    * query string parameter
    * @method documentBaseParam
-   * @return undefined
    */
   documentBaseParam() {
     this.router.route('/:id')

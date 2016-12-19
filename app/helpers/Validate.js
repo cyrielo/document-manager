@@ -18,7 +18,7 @@ class Validate {
    * Validate email
    * @method email
    * @param {String} email
-   * @return Boolean
+   * @return {Boolean} true if email is valid
    */
   email(email) {
     if (!Validate.isDefined(email)) {
@@ -37,7 +37,7 @@ class Validate {
    * Asserts if a string is empty or undefined
    * @method isEmpty
    * @param {String} str
-   * @return Boolean
+   * @return {Boolean} true if string is empty
    */
   isEmpty(str) {
     if (!Validate.isDefined(str)) {
@@ -51,7 +51,7 @@ class Validate {
    * Asserts if a string is undefined
    * @method isDefined
    * @param {String} str
-   * @return Boolean
+   * @return {Boolean} true if string is defined
    */
   static isDefined(str) {
     return (typeof str !== 'undefined');
@@ -62,7 +62,7 @@ class Validate {
    * @method verifyPassword
    * @param {String} password
    * @param {String} hash
-   * @return String
+   * @return {Boolean} if password match returns true
    */
   verifyPassword(password, hash) {
     return this.password.compare(password, hash);
@@ -72,7 +72,7 @@ class Validate {
    * Create a hash from a password string
    * @method hashPassword
    * @param {String} str
-   * @return String
+   * @return {String} returns a generate password hash
    */
   hashPassword(str) {
     return this.password.generate(str);

@@ -26,7 +26,7 @@ class Roles {
   /**
    * Returns a router to be expose other routes created
    * @method route
-   * @return Router
+   * @return {Object} Router object
   */
   route() {
     return this.router;
@@ -35,7 +35,6 @@ class Roles {
   /**
    * Handle request made to the role root route
    * @method baseRoute
-   * @return undefined
    */
   baseRoute() {
     this.router.route('/')
@@ -50,7 +49,6 @@ class Roles {
   /**
    * Handles request with query string parameters
    * @method baseRouteParam
-   * @return undefined
   */
   baseRouteParam() {
     this.router.route('/:id')

@@ -29,7 +29,7 @@ class Base {
   /**
    * Returns the router used by the object
    * @method route
-   * @return Router
+   * @return {Object} Router object
    */
   route() {
     return this.router;

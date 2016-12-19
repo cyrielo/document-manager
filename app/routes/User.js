@@ -33,7 +33,7 @@ class User {
 
   /**
    * Returns the Router to expose the router
-   * @method route
+   * @return {Object} Router object
   */
   route() {
     return this.router;

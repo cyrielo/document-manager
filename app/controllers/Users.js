@@ -22,7 +22,6 @@ class Users {
    * @method login
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
   */
   login(req, res) {
     this.models.Users.login(req)
@@ -47,7 +46,6 @@ class Users {
    * @method register
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   register(req, res) {
     this.models.Users.register(req)
@@ -72,7 +70,6 @@ class Users {
    * @method logout
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
   */
   logout(req, res) {
     res.status(200).json({
@@ -86,7 +83,6 @@ class Users {
    * @method getUsers
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
   */
   getUsers(req, res) {
     this.models.Users.getUsers()
@@ -111,7 +107,6 @@ class Users {
    * @method getUser
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   getUser(req, res) {
     this.models.Users.getUser(req.params.id)
@@ -135,7 +130,6 @@ class Users {
    * @method getUserByEmail
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   getUserByEmail(req, res) {
     const email = decodeURIComponent(req.params.email);
@@ -160,7 +154,6 @@ class Users {
    * @method updateUser
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   updateUser(req, res) {
     const uid = req.params.id;
@@ -210,7 +203,6 @@ class Users {
    * @method deleteUser
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   deleteUser(req, res) {
     const uid = req.params.id;
@@ -237,7 +229,6 @@ class Users {
    * @method getUserDocs
    * @param {Object} req
    * @param {Object} res
-   * @return undefined
    */
   getUserDocs(req, res) {
     const uid = req.params.id;
