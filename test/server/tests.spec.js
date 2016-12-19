@@ -108,7 +108,7 @@ describe('User', () => {
         password: '32156',
         role: 'admin',
       })
-      .expect(422)
+      .expect(400)
       .end((req, res) => {
         expect(res.body.status).to.equal('fail');
         expect(res.body.message[0]).to.equal('Last name is required');
