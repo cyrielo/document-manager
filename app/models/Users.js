@@ -45,7 +45,7 @@ const UserModel = (sequelize, DataTypes) => {
 
           Users.userExists(email)
             .then(() => {
-              fail({ statusCode: 400, message: 'User already exists!' });
+              fail({ statusCode: 409, message: 'User already exists!' });
             })
             .catch(() => {
               const errors = [];

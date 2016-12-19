@@ -3,7 +3,7 @@ import config from './../config/config';
 
 /**
  * Authentication middleware to intercept and authenticate requests
- *@class Authenticate
+ * @class Authenticate
  */
 class Authenticate {
   /**
