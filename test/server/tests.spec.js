@@ -56,7 +56,7 @@ describe('User', () => {
     requestHandler.post('/api/users')
       .set('Accept', 'application/json')
       .send(testUser)
-      .expect(400)
+      .expect(409)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
         expect(res.body.message).to.equal('User already exists!');
@@ -72,7 +72,7 @@ describe('User', () => {
         lastname: 'George',
         password: '123456',
       })
-      .expect(422)
+      .expect(400)
       .end((err, res) => {
         expect(res.body.status).to.equal('fail');
         expect(res.body.message[0]).to.equal('Email is not valid');

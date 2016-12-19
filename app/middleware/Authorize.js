@@ -4,7 +4,7 @@ import config from './../config/config';
 /**
  * Authorize middleware to intercept and check
  * if request is authorized
- *@class Authorize
+ * @class Authorize
  */
 class Authorize {
   /**
